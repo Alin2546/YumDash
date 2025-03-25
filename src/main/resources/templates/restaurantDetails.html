@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalii Restaurant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .card-img-top {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+     .img-fluid {
+      width: 30%;
+      height: 200px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-light p-3">
+  <div class="container-fluid">
+    <a href="/" class="navbar-brand mb-0 h1" style="font-size: 2.5rem; color: #FFA500; text-decoration: none;">YumDash</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <h1 th:text="${foodProvider.name}">Numele Restaurantului</h1>
+  <img th:src="@{${foodProvider.imageurl}}" class="img-fluid rounded mb-3" alt="Imagine restaurant">
+
+  <!-- Navigare Categorii -->
+  <ul class="nav nav-pills mt-4">
+    <li class="nav-item">
+      <a class="nav-link active" id="starters-tab" data-bs-toggle="pill" href="#starters">Aperitive</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="main-course-tab" data-bs-toggle="pill" href="#main-course">Feluri principale</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="desserts-tab" data-bs-toggle="pill" href="#desserts">Deserturi</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="beverages-tab" data-bs-toggle="pill" href="#beverages">Băuturi</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="side-dishes-tab" data-bs-toggle="pill" href="#side-dishes">Garnituri</a>
+    </li>
+  </ul>
+
+  <!-- Conținut Categorii -->
+  <div class="tab-content mt-3">
+    <!-- Aperitive -->
+    <div class="tab-pane fade show active" id="starters">
+      <h4>Aperitive</h4>
+      <!-- Produs Alimentar 1 -->
+      <div class="card mb-4">
+        <img src="/FoodImages/pexels-236636281-29714345.jpg" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Rulouri de primăvară</h5>
+          <p class="card-text">Rulouri crocante umplute cu legume proaspete, servite cu sos dulce de ardei iute.</p>
+          <p class="card-text"><strong>Preț: </strong>6.99 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal1">Adaugă</button>
+        </div>
+      </div>
+
+      <!-- Produs Alimentar 2 -->
+      <div class="card mb-4">
+        <img src="/FoodImages/pexels-matreding-11218687.jpg" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Bruschetta</h5>
+          <p class="card-text">Pâine prăjită cu roșii proaspete, busuioc și glazură balsamică.</p>
+          <p class="card-text"><strong>Preț: </strong>8.50 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal2">Adaugă</button>
+        </div>
+      </div>
+
+      <!-- Produs Alimentar 3 -->
+      <div class="card mb-4">
+        <img src="/FoodImages/pexels-novirina-ru-31203048.jpg" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Ciuperci umplute</h5>
+          <p class="card-text">Ciuperci umplute cu un amestec savuros de brânză, usturoi și ierburi aromatice.</p>
+          <p class="card-text"><strong>Preț: </strong>9.99 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal3">Adaugă</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feluri principale -->
+    <div class="tab-pane fade" id="main-course">
+      <h4>Feluri principale</h4>
+      <!-- Produs Alimentar 1 -->
+      <div class="card mb-4">
+        <img src="/FoodImages/pexels-valeriya-1247677.jpg" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Pui la grătar</h5>
+          <p class="card-text">Piept de pui suculent la grătar, servit cu piure de cartofi.</p>
+          <p class="card-text"><strong>Preț: </strong>14.99 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal4">Adaugă</button>
+        </div>
+      </div>
+
+      <!-- Produs Alimentar 2 -->
+      <div class="card mb-4">
+        <img src="/FoodImages/pexels-enginakyurt-2703468.jpg" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Pasta Alfredo</h5>
+          <p class="card-text">Fettuccine cremoase în sos bogat de Alfredo.</p>
+          <p class="card-text"><strong>Preț: </strong>13.50 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal5">Adaugă</button>
+        </div>
+      </div>
+
+      <!-- Produs Alimentar 3 -->
+      <div class="card mb-4">
+        <img src="/FoodImages/pexels-goumbik-618773.jpg" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Friptură de vită</h5>
+          <p class="card-text">Gătită perfect, servită cu legume la cuptor.</p>
+          <p class="card-text"><strong>Preț: </strong>22.99 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal6">Adaugă</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deserturi -->
+    <div class="tab-pane fade" id="desserts">
+      <h4>Deserturi</h4>
+      <!-- Produs Alimentar 1 -->
+      <div class="card mb-4">
+        <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Tort de ciocolată</h5>
+          <p class="card-text">Tort de ciocolată bogat și umed, acoperit cu ganache.</p>
+          <p class="card-text"><strong>Preț: </strong>7.99 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal7">Adaugă</button>
+        </div>
+      </div>
+
+      <!-- Produs Alimentar 2 -->
+      <div class="card mb-4">
+        <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Cheesecake</h5>
+          <p class="card-text">Cheesecake cremos cu crustă de biscuiți graham și fructe proaspete.</p>
+          <p class="card-text"><strong>Preț: </strong>8.50 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal8">Adaugă</button>
+        </div>
+      </div>
+
+      <!-- Produs Alimentar 3 -->
+      <div class="card mb-4">
+        <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs alimentar">
+        <div class="card-body">
+          <h5 class="card-title">Plăcintă cu mere</h5>
+          <p class="card-text">Plăcintă de mere făcută în casă, servită cu înghețată de vanilie.</p>
+          <p class="card-text"><strong>Preț: </strong>6.50 RON</p>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal9">Adaugă</button>
+        </div>
+      </div>
+    </div>
+
+
+<!-- Băuturi -->
+<div class="tab-pane fade" id="beverages">
+  <h4>Băuturi</h4>
+  <!-- Produs 1 -->
+  <div class="card mb-4">
+    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs">
+    <div class="card-body">
+      <h5 class="card-title">Limonadă</h5>
+      <p class="card-text">Limonadă proaspăt stoarsă, servită cu gheață.</p>
+      <p class="card-text"><strong>Preț: </strong>3.50 RON</p>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal10">Adaugă</button>
+    </div>
+  </div>
+
+  <!-- Produs 2 -->
+  <div class="card mb-4">
+    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs">
+    <div class="card-body">
+      <h5 class="card-title">Ceai rece</h5>
+      <p class="card-text">Ceai rece răcoritor, servit cu lămâie.</p>
+      <p class="card-text"><strong>Preț: </strong>2.99 RON</p>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal11">Adaugă</button>
+    </div>
+  </div>
+
+  <!-- Produs 3 -->
+  <div class="card mb-4">
+    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs">
+    <div class="card-body">
+      <h5 class="card-title">Cappuccino</h5>
+      <p class="card-text">Un cappuccino bogat și cremos, preparat cu espresso și lapte spumat.</p>
+      <p class="card-text"><strong>Preț: </strong>4.50 RON</p>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal12">Adaugă</button>
+    </div>
+  </div>
+</div>
+
+<!-- Garnituri -->
+<div class="tab-pane fade" id="side-dishes">
+  <h4>Garnituri</h4>
+  <!-- Produs 1 -->
+  <div class="card mb-4">
+    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs">
+    <div class="card-body">
+      <h5 class="card-title">Piure de cartofi</h5>
+      <p class="card-text">Piure de cartofi cremos, cu un strop de unt și usturoi.</p>
+      <p class="card-text"><strong>Preț: </strong>4.50 RON</p>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal13">Adaugă</button>
+    </div>
+  </div>
+
+  <!-- Produs 2 -->
+  <div class="card mb-4">
+    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs">
+    <div class="card-body">
+      <h5 class="card-title">Legume aburite</h5>
+      <p class="card-text">Un amestec de legume proaspete, ușor aburite și condimentate.</p>
+      <p class="card-text"><strong>Preț: </strong>3.99 RON</p>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal14">Adaugă</button>
+    </div>
+  </div>
+
+  <!-- Produs 3 -->
+  <div class="card mb-4">
+    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Imagine produs">
+    <div class="card-body">
+      <h5 class="card-title">Cartofi prăjiți</h5>
+      <p class="card-text">Cartofi prăjiți aurii și crocanți, serviți cu ketchup.</p>
+      <p class="card-text"><strong>Preț: </strong>2.99 RON</p>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#foodItemModal15">Adaugă</button>
+    </div>
+  </div>
+</div>
+
+
+
+    <!-- Modal pentru fiecare articol alimentar -->
+    <div class="modal fade" id="foodItemModal1" tabindex="-1" aria-labelledby="foodItemModalLabel1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel1">Rulouri de Primăvară</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Imagine produs">
+            <p><strong>Descriere:</strong> Rulouri crocante umplute cu legume proaspete, servite cu un sos dulce-picant.</p>
+            <p><strong>Preț:</strong> 6,99 RON </p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Bruschetta -->
+    <div class="modal fade" id="foodItemModal2" tabindex="-1" aria-labelledby="foodItemModalLabel2" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel2">Bruschetta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Imagine Bruschetta">
+            <p><strong>Descriere:</strong> Pâine prăjită acoperită cu roșii proaspete, busuioc și glazură balsamică.</p>
+            <p><strong>Preț:</strong> 8,50 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Ciuperci Umplute -->
+    <div class="modal fade" id="foodItemModal3" tabindex="-1" aria-labelledby="foodItemModalLabel3" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel3">Ciuperci Umplute</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Imagine produs">
+            <p><strong>Descriere:</strong> Ciuperci umplute cu un amestec savuros de brânză, usturoi și ierburi aromatice.</p>
+            <p><strong>Preț:</strong> 9,99 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Modal pentru Pui la Grătar -->
+    <div class="modal fade" id="foodItemModal4" tabindex="-1" aria-labelledby="foodItemModalLabel4" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel4">Pui la Grătar</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Pui la Grătar">
+            <p><strong>Descriere:</strong> Pui suculent și fraged, asezonat cu mirodenii aromate.</p>
+            <p><strong>Preț:</strong> 14,99 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Paste Alfredo -->
+    <div class="modal fade" id="foodItemModal5" tabindex="-1" aria-labelledby="foodItemModalLabel5" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel5">Paste Alfredo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Imagine produs">
+            <p><strong>Descriere:</strong> Fettuccine cremoase într-un sos bogat Alfredo.</p>
+            <p><strong>Preț:</strong> 13,50 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Friptură de Vită -->
+    <div class="modal fade" id="foodItemModal6" tabindex="-1" aria-labelledby="foodItemModalLabel6" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel6">Friptură de Vită</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Imagine produs">
+            <p><strong>Descriere:</strong> Gătită perfect la grătar și servită cu legume coapte.</p>
+            <p><strong>Preț:</strong> 22,99 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Tort de Ciocolată -->
+    <div class="modal fade" id="foodItemModal7" tabindex="-1" aria-labelledby="foodItemModalLabel7" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel7">Tort de Ciocolată</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Tort de Ciocolată">
+            <p><strong>Descriere:</strong> Tort bogat și pufos, acoperit cu ganache de ciocolată.</p>
+            <p><strong>Preț:</strong> 7,99 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Cheesecake -->
+    <div class="modal fade" id="foodItemModal8" tabindex="-1" aria-labelledby="foodItemModalLabel8" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel8">Cheesecake</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Imagine Cheesecake">
+            <p><strong>Descriere:</strong> Cheesecake cremos și fin, cu un strat de biscuiți crocanți.</p>
+            <p><strong>Preț:</strong> 8,50 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Plăcintă cu Mere -->
+    <div class="modal fade" id="foodItemModal9" tabindex="-1" aria-labelledby="foodItemModalLabel9" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel9">Plăcintă cu Mere</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Plăcintă cu Mere">
+            <p><strong>Descriere:</strong> Crustă fragedă umplută cu mere aromate și scorțișoară.</p>
+            <p><strong>Preț:</strong> 6,50 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Limonadă -->
+    <div class="modal fade" id="foodItemModal10" tabindex="-1" aria-labelledby="foodItemModalLabel10" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel10">Limonadă</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Limonadă">
+            <p><strong>Descriere:</strong> Limonadă răcoritoare și acrișoară, preparată din lămâi proaspăt stoarse.</p>
+            <p><strong>Preț:</strong> 3,50 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Ceai cu Gheață -->
+    <div class="modal fade" id="foodItemModal11" tabindex="-1" aria-labelledby="foodItemModalLabel11" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel11">Ceai cu Gheață</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Ceai cu gheață">
+            <p><strong>Descriere:</strong> Ceai rece și revigorant, servit cu felii de lămâie.</p>
+            <p><strong>Preț:</strong> 2,99 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Cappuccino -->
+    <div class="modal fade" id="foodItemModal12" tabindex="-1" aria-labelledby="foodItemModalLabel12" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel12">Cappuccino</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Cappuccino">
+            <p><strong>Descriere:</strong> Espresso bogat, acoperit cu spumă de lapte și un praf de cacao.</p>
+            <p><strong>Preț:</strong> 4,50 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Piure de Cartofi -->
+    <div class="modal fade" id="foodItemModal13" tabindex="-1" aria-labelledby="foodItemModalLabel13" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel13">Piure de Cartofi</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Piure de cartofi">
+            <p><strong>Descriere:</strong> Piure de cartofi cremos, cu unt și condimente.</p>
+            <p><strong>Preț:</strong> 4,50 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Legume la Abur -->
+    <div class="modal fade" id="foodItemModal14" tabindex="-1" aria-labelledby="foodItemModalLabel14" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel14">Legume la Abur</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Legume la abur">
+            <p><strong>Descriere:</strong> Un mix sănătos de morcovi, broccoli și fasole verde gătite la abur.</p>
+            <p><strong>Preț:</strong> 3,99 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pentru Cartofi Prăjiți -->
+    <div class="modal fade" id="foodItemModal15" tabindex="-1" aria-labelledby="foodItemModalLabel15" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodItemModalLabel15">Cartofi Prăjiți</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+          </div>
+          <div class="modal-body">
+            <img src="https://via.placeholder.com/300" class="img-fluid" alt="Cartofi prăjiți">
+            <p><strong>Descriere:</strong> Cartofi crocanți și aurii, serviți cu sos la alegere.</p>
+            <p><strong>Preț:</strong> 2,99 RON</p>
+            <button class="btn btn-primary">Adaugă în coș</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

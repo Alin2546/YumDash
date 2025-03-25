@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumDash</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .restaurant-card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .restaurant-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid #ddd;
+            transition: transform 0.3s ease;
+        }
+
+        .restaurant-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .restaurant-card .card-body {
+            background-color: #f8f9fa;
+            padding: 15px;
+        }
+
+        .restaurant-card .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .row.mb-4 {
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-weight: 900;
+            font-size: 4rem;
+            color: #f39c12;
+            text-align: left;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Stiluri pentru butoanele de conectare și înregistrare */
+        .login-register-buttons .dropdown-menu {
+            min-width: 200px;
+        }
+
+        /* Poziționarea dropdown-ului mai la stânga */
+        .dropdown-menu {
+            left: 0 !important;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar with Profile Dropdown or Login/Register -->
+<nav class="navbar navbar-light bg-light p-3">
+    <div class="container-fluid d-flex justify-content-between">
+        <a href="/" class="navbar-brand mb-0 h1" style="font-size: 2.5rem; color: #FFA500; text-decoration: none;">YumDash</a>
+        <div class="d-flex align-items-center">
+            <form class="d-flex me-3" action="/search" method="get">
+                <input class="form-control me-2" type="search" name="keyword" placeholder="Ce preferi azi? :)" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Cautare</button>
+            </form>
+
+            <!-- If not logged in, show Login/Register dropdown -->
+            <div th:unless="${loggedInUser}" class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    Conectare / Inregistrare
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="/login/form">Conectare</a></li>
+                    <li><a class="dropdown-item" href="/register/form">Înregistrare</a></li>
+                </ul>
+            </div>
+
+            <!-- User Profile Dropdown if logged in -->
+            <div th:if="${loggedInUser}" class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="user-info">
+                        <span th:text="${loggedInUser.email}">Conectat</span>
+                    </div>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="/profile">Profil</a></li>
+                    <li><a class="dropdown-item" href="/orders">Comenzi</a></li>
+                    <li><a class="dropdown-item" href="/submit/address">Deconecteaza-te</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Restaurants Section -->
+<div class="container mt-4">
+    <h1>Reduceri 40%</h1>
+    <div class="row g-4 mb-4">
+        <div th:each="foodProvider : ${foodProviders}" class="col-md-4">
+            <a th:href="@{/restaurant/{id}(id=${foodProvider.id})}" class="text-decoration-none text-dark">
+                <div class="card restaurant-card">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Restaurant image" th:src="@{${foodProvider.imageurl} ?: 'https://via.placeholder.com/300'}">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${foodProvider.name}"></h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

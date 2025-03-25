@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Providers Near You</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .food-provider-card {
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .food-provider-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid #ddd;
+            transition: transform 0.3s ease;
+        }
+
+        .food-provider-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .food-provider-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .food-provider-card .card-body {
+            background-color: #f8f9fa;
+            padding: 15px;
+        }
+
+        .food-provider-card .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-weight: 900;
+            font-size: 3rem;
+            color: #f39c12;
+            text-align: left;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .row.mb-4 {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-light p-3">
+    <div class="container-fluid d-flex justify-content-between">
+        <a href="/" class="navbar-brand mb-0 h1" style="font-size: 2.5rem; color: #FFA500; text-decoration: none;">YumDash</a>
+        <div class="d-flex align-items-center">
+            <!-- Optional search form (if you want to include location-based search) -->
+            <form class="d-flex me-3" action="/currentLocation" method="GET">
+                <input class="form-control me-2" type="search" name="location" placeholder="Search by county" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h1>Food Providers near: <span th:text="${location}"></span></h1>
+
+    <!-- If no restaurants found -->
+    <div th:if="${#lists.isEmpty(restaurants)}">
+        <p>No food providers found in the specified location.</p>
+    </div>
+
+    <!-- Display the list of food providers -->
+    <div class="row g-4 mb-4">
+        <div th:each="foodProvider : ${restaurants}" class="col-md-4">
+            <a th:href="@{/foodProvider/{id}(id=${foodProvider.id})}" class="text-decoration-none text-dark">
+                <div class="card food-provider-card">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Food Provider image" th:src="@{${foodProvider.imageurl} ?: 'https://via.placeholder.com/300'}">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${foodProvider.name}"></h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

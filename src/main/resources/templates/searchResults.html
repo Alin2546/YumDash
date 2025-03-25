@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Results - YumDash</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .restaurant-card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .restaurant-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 2px solid #ddd;
+        transition: transform 0.3s ease;
+    }
+
+    .restaurant-card:hover img {
+        transform: scale(1.05);
+    }
+
+    .restaurant-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .restaurant-card .card-body {
+        background-color: #f8f9fa;
+        padding: 15px;
+    }
+
+    .restaurant-card .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .row.mb-4 {
+        margin-bottom: 30px;
+    }
+
+    h1 {
+        font-weight: 900;
+        font-size: 4rem;
+        color: #f39c12;
+        text-align: left;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-light p-3">
+  <div class="container-fluid">
+    <a href="/" class="navbar-brand mb-0 h1" style="font-size: 2.5rem; color: #FFA500; text-decoration: none;">YumDash</a>
+    <form class="d-flex" action="/search" method="get">
+      <input class="form-control me-2" type="search" name="keyword" placeholder="Search restaurants" aria-label="Search" th:value="${keyword}">
+      <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+<div class="container mt-4">
+  <h1>Search Results</h1>
+  <div class="row g-4 mb-4">
+    <div th:if="${#lists.isEmpty(providers)}">
+      <p>No restaurants found for "<span th:text="${keyword}"></span>". Please try a different search.</p>
+    </div>
+    <div th:each="provider : ${providers}" class="col-md-4">
+      <!-- Wrap the card in an anchor tag to make it clickable -->
+      <a href="#" th:href="@{/restaurant/{id}(id=${provider.id})}" class="text-decoration-none">
+        <div class="card restaurant-card">
+          <img src="https://via.placeholder.com/300" class="card-img-top" alt="Restaurant image" th:src="@{${provider.imageurl} ?: 'https://via.placeholder.com/300'}">
+          <div class="card-body">
+            <h5 class="card-title" th:text="${provider.name}"></h5>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
