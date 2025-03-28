@@ -40,11 +40,5 @@ public class HomeController {
         return "searchResults";
     }
 
-    @GetMapping("/currentLocation")
-    public String searchByLocation(@RequestParam("location") String location, Model model) {
-        List<FoodProvider> foodProviders = foodProviderService.findByCounty(location);
-        model.addAttribute("restaurants", foodProviders);
-        return "currentLocationProviders";
-    }
 }
 

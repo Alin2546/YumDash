@@ -82,7 +82,7 @@
                     Conectare / Inregistrare
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="/login/form">Conectare</a></li>
+                    <li><a class="dropdown-item" href="/loginForm">Conectare</a></li>
                     <li><a class="dropdown-item" href="/register/form">Înregistrare</a></li>
                 </ul>
             </div>
@@ -91,7 +91,7 @@
             <div th:if="${loggedInUser}" class="dropdown">
                 <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="user-info">
-                        <span th:text="${loggedInUser.email}">Conectat</span>
+                        <span th:text="${loggedInUser}">Conectat</span>
                     </div>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">

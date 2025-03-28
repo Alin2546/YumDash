@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface FoodProviderRepo extends JpaRepository<FoodProvider, Integer> {
     List<FoodProvider> findByNameContainingIgnoreCase(String keyword);
-    List<FoodProvider> findByCounty(String keyword);
 }

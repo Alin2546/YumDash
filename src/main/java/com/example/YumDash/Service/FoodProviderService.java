@@ -29,9 +29,6 @@ public class FoodProviderService {
         return foodProviderRepo.findById(id).orElseThrow(() -> new RuntimeException("Restaurant not found"));
     }
 
-    public List<FoodProvider> findByCounty(String keyword) {
-        return foodProviderRepo.findByCounty(keyword);
-    }
 
 
 }
