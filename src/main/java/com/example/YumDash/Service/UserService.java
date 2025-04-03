@@ -1,6 +1,6 @@
 package com.example.YumDash.Service;
 
-import com.example.YumDash.Model.User;
+import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

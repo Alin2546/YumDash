@@ -71,7 +71,6 @@
       <p>No restaurants found for "<span th:text="${keyword}"></span>". Please try a different search.</p>
     </div>
     <div th:each="provider : ${providers}" class="col-md-4">
-      <!-- Wrap the card in an anchor tag to make it clickable -->
       <a href="#" th:href="@{/restaurant/{id}(id=${provider.id})}" class="text-decoration-none">
         <div class="card restaurant-card">
           <img src="https://via.placeholder.com/300" class="card-img-top" alt="Restaurant image" th:src="@{${provider.imageurl} ?: 'https://via.placeholder.com/300'}">

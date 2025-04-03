@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,41 +8,127 @@
     <style>
         body {
             background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow-y: auto;  /* Make the page scrollable */
         }
+
         .register-container {
             max-width: 400px;
-            margin: 100px auto;
+         margin: 0 auto;
             padding: 30px;
             background: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;  /* Ensure the container is scrollable */
+        }
+
+        .oauth-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .oauth-buttons a {
+            display: inline-block;
+        }
+
+        .google-btn, .github-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .google-btn {
+            background-color: #f5f5f7;
+        }
+
+        .google-btn:hover {
+            background-color: #c1351d;
+        }
+
+        .github-btn {
+            background-color: #f5f5f7;
+        }
+
+        .github-btn:hover {
+            background-color: #0859d4;
+        }
+
+        .google-btn img, .github-btn img {
+            width: 24px;
+            height: 24px;
+        }
+
+        @media (max-width: 576px) {
+            .register-container {
+                max-width: 100%;
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="register-container">
-        <h3 class="text-center">Register</h3>
-        <form th:action="@{/register}" method="post" th:object="${UserCreateDto}">
+        <h3 class="text-center">Inregistrare</h3>
+        <form th:action="@{/register}" method="post" th:object="${userCreateDto}">
             <div class="mb-3">
-                <label for="name" class="form-label">Full Name</label>
-                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Enter full name">
+                <label for="name" class="form-label">Nume complet</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Introdu numele complet" required>
+                <div th:if="${#fields.hasErrors('name')}" class="text-danger">
+                    <span th:errors="*{name}"></span>
+                </div>
             </div>
             <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Enter email">
+                <label for="email" class="form-label">Adresa email</label>
+                <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Introdu email" required>
+                <div th:if="${#fields.hasErrors('email')}" class="text-danger">
+                    <span th:errors="*{email}"></span>
+                </div>
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Enter password">
+                <label for="password" class="form-label">Parola</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Parola" required minlength="8" maxlength="50">
+                <div th:if="${#fields.hasErrors('password')}" class="text-danger">
+                    <span th:errors="*{password}"></span>
+                </div>
             </div>
             <div class="mb-3">
-                <label for="confirm-password" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="confirm-password" th:field="*{verifypassword}" placeholder="Confirm password">
+                <label for="confirm-password" class="form-label">Confirma parola</label>
+                <input type="password" class="form-control" id="confirm-password" th:field="*{verifypassword}" placeholder="Confirma parola" required minlength="8" maxlength="50">
+                <div th:if="${#fields.hasErrors('verifypassword')}" class="text-danger">
+                    <span th:errors="*{verifypassword}"></span>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Register</button>
+            <button type="submit" class="btn btn-primary w-100">Inregistrare</button>
         </form>
-        <p class="text-center mt-3">Ai deja cont? <a href="/login/form">Login</a></p>
+
+        <p class="text-center mt-3">Ai deja cont? <a href="/loginForm">Conecteaza-te</a></p>
+        <p class="text-center mt-3">Sau continua cu:</p>
+        <div class="oauth-buttons">
+
+            <a href="/oauth2/authorization/google">
+                <button class="google-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/180px-Google_%22G%22_logo.svg.png" alt="Google Logo"/>
+                </button>
+            </a>
+
+
+            <a href="/oauth2/authorization/github">
+                <button class="github-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Font_Awesome_5_brands_github.svg/250px-Font_Awesome_5_brands_github.svg.png" alt="GitHub Logo"/>
+                </button>
+            </a>
+        </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

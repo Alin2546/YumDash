@@ -17,48 +17,52 @@
             text-align: center;
             margin-bottom: 40px;
         }
-        .order-list {
+        .order-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .userOrder-list {
             list-style-type: none;
             padding: 0;
         }
-        .order-item {
-            margin-bottom: 30px;
-            padding: 20px;
+        .userOrder-item {
+            margin-bottom: 20px;
+            padding: 15px;
             background-color: #ffffff;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
-        .order-item:hover {
+        .userOrder-item:hover {
             transform: scale(1.02);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
-        .order-item p {
-            margin: 10px 0;
+        .userOrder-item p {
+            margin: 8px 0;
         }
-        .order-item .order-id {
+        .userOrder-item .userOrder-id {
             font-weight: bold;
             color: #007bff;
         }
-        .order-item .order-date,
-        .order-item .order-amount,
-        .order-item .order-status {
+        .userOrder-item .userOrder-date,
+        .userOrder-item .userOrder-amount,
+        .userOrder-item .userOrder-status {
             color: #495057;
         }
-        .no-orders {
+        .no-userOrders {
             text-align: center;
             font-size: 1.25rem;
             color: #868e96;
-            padding: 20px;
+            padding: 15px;
             background-color: #ffffff;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             max-width: 500px;
-            margin: 0 auto;
+            margin: 20px auto;
         }
-        .order-item p strong {
+        .userOrder-item p strong {
             color: #007bff;
         }
     </style>
@@ -67,19 +71,20 @@
 
 <h1>Comenzile tale</h1>
 
-<div th:if="${orders != null && !orders.isEmpty()}">
-    <ul class="order-list">
-        <li th:each="order : ${orders}" class="order-item">
-            <p class="order-id"><strong>Order ID:</strong> <span th:text="${order.id}">Order ID</span></p>
-            <p class="order-date"><strong>Order Date:</strong> <span th:text="${order.orderDate}">Order Date</span></p>
-            <p class="order-amount"><strong>Amount:</strong> <span th:text="${order.amount}">Amount</span></p>
-            <p class="order-status"><strong>Status:</strong> <span th:text="${order.status}">Status</span></p>
-        </li>
-    </ul>
-</div>
+<div class="order-container">
+    <div th:if="${userOrders != null && !userOrders.isEmpty()}">
+        <ul class="userOrder-list">
+            <li th:each="userOrder : ${userOrders}" class="userOrder-item">
+                <p class="userOrder-date"><strong>Data comenzii:</strong> <span th:text="${userOrder.orderDate}">Order Date</span></p>
+                <p class="userOrder-amount"><strong>Suma totala:</strong> <span th:text="${userOrder.amount + ' RON'}">Amount</span></p>
+                <p class="userOrder-status"><strong>Statusul comenzii:</strong> <span th:text="${userOrder.status}">Status</span></p>
+            </li>
+        </ul>
+    </div>
 
-<div th:if="${orders == null || orders.isEmpty()}" class="no-orders">
-    <p>Nu ai nicio comanda deocamdata.</p>
+    <div th:if="${userOrders == null || userOrders.isEmpty()}" class="no-userOrders">
+        <p>Nu ai nicio comanda deocamdata.</p>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

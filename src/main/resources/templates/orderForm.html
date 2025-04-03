@@ -62,7 +62,7 @@
 <div class="container">
     <h2>Place an Order</h2>
 
-    <form th:action="@{/createOrder}" th:object="${order}" method="post">
+    <form th:action="@{/createOrder}" th:object="${userOrder}" method="post">
         <label for="orderDate">Order Date:</label>
         <input type="date" id="orderDate" name="orderDate" required>
 

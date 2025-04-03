@@ -1,12 +1,10 @@
 package com.example.YumDash.Controller;
 
-import com.example.YumDash.Model.Dto.UserLoginDto;
-import com.example.YumDash.Model.FoodProvider;
-import com.example.YumDash.Model.User;
-import com.example.YumDash.Repository.FoodProviderRepo;
-import com.example.YumDash.Service.FoodProviderService;
-import com.example.YumDash.Service.UserService;
+
+import com.example.YumDash.Service.FoodService;
+import com.example.YumDash.Service.GoogleMapsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,27 +16,25 @@ import java.util.List;
 public class HomeController {
 
 
-    private final FoodProviderService foodProviderService;
+
+    private final GoogleMapsService googleMapsService;
+    private final FoodService foodService;
+
 
     @GetMapping
-    public String homePage() {
+    public String homePage(Model model) {
         return "home";
     }
 
-
-    @GetMapping("/submit/address")
-    public String getFoodPage(Model model) {
-        List<FoodProvider> foodProviders = foodProviderService.getAllProviders();
-        model.addAttribute("foodProviders", foodProviders);
-        return "foodPage";
+    @GetMapping("/chooseAddress")
+    public String getAddresses(@RequestParam String address, Model model) {
+        if (address != null && !address.isEmpty()) {
+            List<String> addresses = googleMapsService.getFormattedAddress(address);
+            model.addAttribute("addressSuggestions", addresses);
+        }
+        return "AddressChooser";
     }
 
-    @GetMapping("/search")
-    public String search(@RequestParam String keyword, Model model) {
-        List<FoodProvider> providers = foodProviderService.searchFoodProviders(keyword);
-        model.addAttribute("providers", providers);
-        return "searchResults";
-    }
 
 }
 

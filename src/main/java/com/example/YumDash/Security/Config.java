@@ -7,19 +7,26 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 
 @Configuration
 @EnableWebSecurity
-public class Config{
+public class Config {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(c -> c.disable())
                 .formLogin(form -> form
                         .loginPage("/loginForm")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/foodPage", true)
+                        .defaultSuccessUrl("/getFoodPage", true)
+                        .failureUrl("/loginForm?error=true")
                         .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/loginForm")
+                        .defaultSuccessUrl("/getFoodPage", true)
+                        .failureUrl("/loginForm?error=true")
                 )
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/**")
@@ -27,7 +34,9 @@ public class Config{
                                 .anyRequest()
                                 .authenticated());
         return httpSecurity.build();
-    };
+    }
+
+    ;
 
     @Bean
     public PasswordEncoder encoder() {
