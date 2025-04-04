@@ -41,9 +41,7 @@ public class FoodService {
         double[] userCoords = googleMapsService.getCoordinates(userAddress);
         if (userCoords == null) return null;
 
-
         List<FoodProvider> allRestaurants = foodProviderRepo.findAll();
-
 
         return allRestaurants.stream()
                 .filter(restaurant -> {
@@ -63,6 +61,4 @@ public class FoodService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
-
-
 }

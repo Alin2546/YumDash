@@ -27,7 +27,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final FoodService foodService;
     private final OrderService orderService;
 
 
@@ -55,27 +54,7 @@ public class UserController {
         return "loginForm";
     }
 
-    @GetMapping("/getFoodPage")
-    public String showFoodPage(Model model, Authentication authentication, @RequestParam(required = false) String address, HttpSession session) {
-        if (address != null && !address.isEmpty()) {
-            session.setAttribute("savedAddress", address);
-        } else {
-            address = (String) session.getAttribute("savedAddress");
-        }
-        if (authentication != null) {
-            MyUser myUser = (MyUser) authentication.getPrincipal();
-            model.addAttribute("loggedInUser", myUser.getUsername());
-        }
-        if (address != null && !address.isEmpty()) {
-            List<FoodProvider> nearbyRestaurants = foodService.getNearbyRestaurants(address);
-            if (nearbyRestaurants != null && !nearbyRestaurants.isEmpty()) {
-                model.addAttribute("foodProviders", nearbyRestaurants);
-            } else {
-                return "noDeliveryPage";
-            }
-        }
-        return "foodPage";
-    }
+
 
     @GetMapping("/profile")
     public String getUserProfile(Model model, Authentication authentication) {

@@ -65,13 +65,13 @@
   </div>
 </nav>
 <div class="container mt-4">
-  <h1>Search Results</h1>
+  <h1>Rezultate</h1>
   <div class="row g-4 mb-4">
     <div th:if="${#lists.isEmpty(providers)}">
-      <p>No restaurants found for "<span th:text="${keyword}"></span>". Please try a different search.</p>
+      <p>Niciun restaurant gasit "<span th:text="${keyword}"></span>". Te rugam sa cauti altceva.</p>
     </div>
     <div th:each="provider : ${providers}" class="col-md-4">
-      <a href="#" th:href="@{/restaurant/{id}(id=${provider.id})}" class="text-decoration-none">
+      <a th:href="@{/products(providerId=${provider.id})}" class="text-decoration-none">
         <div class="card restaurant-card">
           <img src="https://via.placeholder.com/300" class="card-img-top" alt="Restaurant image" th:src="@{${provider.imageurl} ?: 'https://via.placeholder.com/300'}">
           <div class="card-body">

@@ -2,7 +2,10 @@ package com.example.YumDash.Controller;
 
 import com.example.YumDash.Model.Food.FoodProvider;
 import com.example.YumDash.Service.FoodService;
+import com.example.YumDash.Service.SecurityService.MyUser;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

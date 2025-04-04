@@ -26,7 +26,6 @@ public class GoogleMapsService {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<GoogleResponse> responseEntity =
                 restTemplate.getForEntity(requestUrl, GoogleResponse.class);
-
         return responseEntity.getBody().getResults().stream()
                 .map(Address::getFormattedAddress)
                 .toList();
@@ -41,9 +40,8 @@ public class GoogleMapsService {
                 restTemplate.getForEntity(url, GoogleNearbyResponse.class);
 
         GoogleNearbyResponse response = responseEntity.getBody();
-
         if (response != null && !response.getGoogleResultList().isEmpty()) {
-            GoogleResult result = response.getGoogleResultList().getFirst();
+            GoogleResult result = response.getGoogleResultList().get(0);
             return new double[]{result.getGeometry().getLocation().getLat(),
                     result.getGeometry().getLocation().getLng()};
         }else {

@@ -22,6 +22,11 @@ public class Config {
                         .defaultSuccessUrl("/getFoodPage", true)
                         .failureUrl("/loginForm?error=true")
                         .permitAll()
+                )  .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/loginForm")
