@@ -1,10 +1,10 @@
-package com.example.YumDash.Service;
+package com.example.YumDash.Service.FoodService;
 
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
 import com.example.YumDash.Repository.FoodProductRepo;
 import com.example.YumDash.Repository.FoodProviderRepo;
-import com.example.YumDash.Repository.OrderRepo;
+import com.example.YumDash.Service.GoogleMapsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -14,10 +14,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class FoodService {
+public class FoodProviderService {
 
     private final FoodProviderRepo foodProviderRepo;
-    private final FoodProductRepo foodProductRepo;
     private final GoogleMapsService googleMapsService;
 
     public List<FoodProvider> getAllProviders() {
@@ -30,10 +29,6 @@ public class FoodService {
 
     public FoodProvider findById(int id) {
         return foodProviderRepo.findById(id).orElseThrow(() -> new RuntimeException("Restaurant not found"));
-    }
-
-    public List<FoodProduct> getProductsByProviderId(int providerId) {
-        return foodProductRepo.findByFoodProviderId(providerId);
     }
 
     public List<FoodProvider> getNearbyRestaurants(String userAddress) {

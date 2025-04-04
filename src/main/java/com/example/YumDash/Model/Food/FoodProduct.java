@@ -19,7 +19,7 @@ public class FoodProduct {
     private FoodProvider foodProvider;
 
     private String name;
-    private String price;
+    private double price;
     private String imageurl;
 }
 

@@ -1,11 +1,9 @@
 package com.example.YumDash.Controller;
 
 import com.example.YumDash.Model.Food.FoodProvider;
-import com.example.YumDash.Service.FoodService;
-import com.example.YumDash.Service.SecurityService.MyUser;
-import jakarta.servlet.http.HttpSession;
+import com.example.YumDash.Service.FoodService.FoodProductService;
+import com.example.YumDash.Service.FoodService.FoodProviderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,19 +16,26 @@ import java.util.List;
 public class FoodController {
 
 
-    private final FoodService foodService;
+    private final FoodProviderService foodProviderService;
+    private final FoodProductService foodProductService;
 
     @GetMapping("/products")
     public String getProductsByProvider(@RequestParam("providerId") int providerId, Model model) {
-        model.addAttribute("products", foodService.getProductsByProviderId(providerId));
+        model.addAttribute("products", foodProductService.getProductsByProviderId(providerId));
         return "restaurantDetails";
     }
 
 
     @GetMapping("/search")
     public String search(@RequestParam String keyword, Model model) {
-        List<FoodProvider> providers = foodService.searchFoodProviders(keyword);
+        List<FoodProvider> providers = foodProviderService.searchFoodProviders(keyword);
         model.addAttribute("providers", providers);
         return "searchResults";
     }
+
+//    @GetMapping("/addToCart"){
+//        public String addProductToCart(){
+//
+//        }
+//    }
 }

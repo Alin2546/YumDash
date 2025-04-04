@@ -2,7 +2,7 @@ package com.example.YumDash.Controller;
 
 
 import com.example.YumDash.Model.Food.FoodProvider;
-import com.example.YumDash.Service.FoodService;
+import com.example.YumDash.Service.FoodService.FoodProviderService;
 import com.example.YumDash.Service.GoogleMapsService;
 import com.example.YumDash.Service.SecurityService.MyUser;
 import jakarta.servlet.http.HttpSession;
@@ -20,7 +20,7 @@ public class HomeController {
 
 
     private final GoogleMapsService googleMapsService;
-    private final FoodService foodService;
+    private final FoodProviderService foodProviderService;
 
 
     @GetMapping
@@ -49,7 +49,7 @@ public class HomeController {
             model.addAttribute("loggedInUser", myUser.getUsername());
         }
         if (address != null && !address.isEmpty()) {
-            List<FoodProvider> nearbyRestaurants = foodService.getNearbyRestaurants(address);
+            List<FoodProvider> nearbyRestaurants = foodProviderService.getNearbyRestaurants(address);
             model.addAttribute("foodProviders", nearbyRestaurants);
         }
         return "foodPage";

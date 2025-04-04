@@ -1,14 +1,11 @@
 package com.example.YumDash.Controller;
 
 import com.example.YumDash.Model.Dto.UserCreateDto;
-import com.example.YumDash.Model.Food.FoodProvider;
 import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
-import com.example.YumDash.Service.FoodService;
 import com.example.YumDash.Service.SecurityService.MyUser;
 import com.example.YumDash.Service.OrderService;
 import com.example.YumDash.Service.UserService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,7 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 import java.util.List;

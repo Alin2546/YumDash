@@ -1,20 +1,25 @@
 package com.example.YumDash.Service.SecurityService;
 
 import com.example.YumDash.Model.User.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
 @RequiredArgsConstructor
 public class MyUser implements UserDetails {
+
     private final User user;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole());
-        return List.of(simpleGrantedAuthority);
+        return List.of(new SimpleGrantedAuthority(user.getRole()));
     }
 
     @Override

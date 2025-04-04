@@ -32,6 +32,7 @@ public class Config {
                         .loginPage("/loginForm")
                         .defaultSuccessUrl("/getFoodPage", true)
                         .failureUrl("/loginForm?error=true")
+
                 )
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/**")
@@ -40,8 +41,6 @@ public class Config {
                                 .authenticated());
         return httpSecurity.build();
     }
-
-    ;
 
     @Bean
     public PasswordEncoder encoder() {

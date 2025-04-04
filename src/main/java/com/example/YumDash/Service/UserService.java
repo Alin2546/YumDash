@@ -22,7 +22,7 @@ public class UserService {
         usersRepo.save(user);
     }
 
-    public User findByEmail(String email) {return usersRepo.findByEmail(email);}
+    public User findByEmail(String email) {return usersRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("Emailul nu a fost gasit:" + email));}
 
 
 
