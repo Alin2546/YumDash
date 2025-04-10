@@ -5,7 +5,9 @@ import com.example.YumDash.Repository.FoodProductRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +18,15 @@ public class FoodProductService {
         return foodProductRepo.findByFoodProviderId(providerId);
     }
 
-//    public void addProductToCart(int id){
-//
-//    }
+    public Map<Integer, FoodProduct> getAllFoodProducts() {
+
+        List<FoodProduct> foodProducts =foodProductRepo.findAll();
+        Map<Integer, FoodProduct> foodProductMap = new HashMap<>();
+
+        for (FoodProduct foodProduct : foodProducts) {
+            foodProductMap.put(foodProduct.getId(), foodProduct);
+        }
+
+        return foodProductMap;
+    }
 }

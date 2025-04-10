@@ -5,9 +5,12 @@ import com.example.YumDash.Model.Food.FoodProvider;
 import com.example.YumDash.Service.FoodService.FoodProviderService;
 import com.example.YumDash.Service.GoogleMapsService;
 import com.example.YumDash.Service.SecurityService.MyUser;
+import com.example.YumDash.Util.AuthUtils;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,21 +41,29 @@ public class HomeController {
     }
 
     @GetMapping("/getFoodPage")
-    public String showFoodPage(Model model, Authentication authentication, @RequestParam(required = false) String address, HttpSession session) {
+    public String showFoodPage(Model model, Authentication authentication,
+                               @RequestParam(required = false) String address,
+                               HttpSession session) {
+
         if (address != null && !address.isEmpty()) {
             session.setAttribute("savedAddress", address);
         } else {
             address = (String) session.getAttribute("savedAddress");
         }
+
+        model.addAttribute("address", address);
+
         if (authentication != null) {
-            MyUser myUser = (MyUser) authentication.getPrincipal();
-            model.addAttribute("loggedInUser", myUser.getUsername());
+            String username = AuthUtils.extractUsername(authentication.getPrincipal());
+            model.addAttribute("loggedInUser", username);
         }
+
         if (address != null && !address.isEmpty()) {
             List<FoodProvider> nearbyRestaurants = foodProviderService.getNearbyRestaurants(address);
             model.addAttribute("foodProviders", nearbyRestaurants);
         }
         return "foodPage";
     }
+
 }
 

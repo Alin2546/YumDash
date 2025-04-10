@@ -28,6 +28,7 @@ public class UserCreateDto {
     private String verifypassword;
 
     private String role = "ROLE_USER";
+    private String provider = "yumdash";
 
     public User mapToUser() {
         User user = new User();

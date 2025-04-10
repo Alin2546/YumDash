@@ -9,6 +9,8 @@ import com.example.YumDash.Service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,12 +39,18 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("userCreateDto", userCreateDto);
             return "createUser";
-        } else if (!(userCreateDto.getPassword().equals(userCreateDto.getVerifypassword()))) {
+        }
+            else if(userService.findByEmail(userCreateDto.getEmail()).isPresent()){
+            bindingResult.rejectValue("email", "error.email", "Emailul tau a fost deja inregistrat!");
+            return "createUser";
+            }
+
+        else if (!(userCreateDto.getPassword().equals(userCreateDto.getVerifypassword()))) {
             bindingResult.rejectValue("verifypassword", "error.verifypassword", "Parolele nu se potrivesc!");
             return "createUser";
         }
         userService.createUser(userCreateDto.mapToUser());
-        return "redirect:/submit/address";
+        return "redirect:/loginForm";
     }
 
     @GetMapping("/loginForm")
@@ -50,26 +58,51 @@ public class UserController {
         return "loginForm";
     }
 
-
-
     @GetMapping("/profile")
     public String getUserProfile(Model model, Authentication authentication) {
-        MyUser myUser = (MyUser) authentication.getPrincipal();
-        model.addAttribute("user", myUser);
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof OidcUser oidcUser) {
+                String fullName = oidcUser.getFullName();
+                String email = oidcUser.getEmail();
+
+                model.addAttribute("authProvider", "Google");
+                model.addAttribute("userName", fullName);
+                model.addAttribute("userEmail", email);
+            } else if (principal instanceof OAuth2User oauth2User) {
+                String githubLogin = oauth2User.getAttribute("login");
+                String email = oauth2User.getAttribute("email");
+
+                model.addAttribute("authProvider", "Facebook");
+                model.addAttribute("userName", githubLogin);
+                model.addAttribute("userEmail", email);
+            } else if (principal instanceof MyUser myUser) {
+                model.addAttribute("authProvider", "Local");
+                model.addAttribute("userName", myUser.getName());
+                model.addAttribute("userEmail", myUser.getUsername());
+            }
+        }
         return "userProfile";
     }
 
+
     @GetMapping("/orders")
     public String getUserOrders(Model model, Authentication authentication) {
-        User user = userService.findByEmail(authentication.getName());
+        Object principal = authentication.getPrincipal();
+        String email = null;
+
+        if (principal instanceof OAuth2User) {
+            email = (String) ((OAuth2User) principal).getAttributes().get("email");
+        } else {
+            email = authentication.getName();
+        }
+        User user = userService.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
         List<UserOrder> userOrders = orderService.findOrdersByUser(user);
         model.addAttribute("userOrders", userOrders);
         return "userOrders";
     }
 
-    @GetMapping("/userShoppingCart")
-    public String getUserCart() {
-        return "shoppingCart";
-    }
+
 
 }

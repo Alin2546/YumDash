@@ -52,8 +52,8 @@
         <div class="card-body">
           <h5 class="product-name" th:text="${product.name}"></h5>
           <p class="product-price" th:text="${product.price} + ' RON'"></p>
-          <form method="post" action="/addToCart">
-            <input type="hidden" name="productId" th:value="${product.id}"/>
+          <form method="post" th:action="@{/cart/add}">
+            <input type="hidden" name="foodProductId" th:value="${product.id}"/>
             <button type="submit" class="btn btn-success">Adaugă în coș</button>
           </form>
         </div>
