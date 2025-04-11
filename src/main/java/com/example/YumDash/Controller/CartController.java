@@ -8,10 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,13 +30,12 @@ public class CartController {
         FoodProduct foodProduct = foodProductRepo.findById(foodProductId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-
+        @SuppressWarnings("unchecked")
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();
-            session.setAttribute("cart", cart);  // Inițializează coșul în sesiune
+            session.setAttribute("cart", cart);
         }
-
 
         cart.put(foodProductId, cart.getOrDefault(foodProductId, 0) + 1);
 
@@ -49,34 +45,55 @@ public class CartController {
 
     @GetMapping("/view")
     public String viewCart(HttpSession session, Model model) {
+        @SuppressWarnings("unchecked")
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();
         }
 
-
         Map<Integer, FoodProduct> foodProductMap = foodProductService.getAllFoodProducts();
 
-//        double total = cartService.calculateTotal(cart, foodProductMap);
+     double total = cartService.calculateTotal(session, foodProductMap);
 
         model.addAttribute("cart", cart);
         model.addAttribute("foodProductMap", foodProductMap);
-//        model.addAttribute("total", total);
+     model.addAttribute("total", total);
 
         return "cartView";
     }
 
 
-    @PostMapping("/remove")
-    public String removeFromCart(@RequestParam("foodProductId") Integer foodProductId, HttpSession session) {
-        cartService.removeFromCart(session, foodProductId);
+    @GetMapping("/decrease/{productId}")
+    public String decreaseItemQuantity(@PathVariable Integer productId, HttpSession session) {
+        @SuppressWarnings("unchecked")
+        Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new HashMap<>();
+        }
+
+        if (cart.containsKey(productId)) {
+            int currentQuantity = cart.get(productId);
+            if (currentQuantity > 1) {
+                cart.put(productId, currentQuantity - 1);
+            } else {
+                cart.remove(productId);
+            }
+        }
+
+        session.setAttribute("cart", cart);
         return "redirect:/cart/view";
     }
 
+    @GetMapping("/increase/{productId}")
+    public String increaseItemQuantity(@PathVariable Integer productId, HttpSession session) {
+        @SuppressWarnings("unchecked")
+        Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new HashMap<>();
+        }
 
-    @PostMapping("/clear")
-    public String clearCart(HttpSession session) {
-        cartService.clearCart(session);
+        cart.put(productId, cart.getOrDefault(productId, 0) + 1);
+        session.setAttribute("cart", cart);
         return "redirect:/cart/view";
     }
 }

@@ -46,6 +46,16 @@ public class FoodProviderService {
                 .collect(Collectors.toList());
     }
 
+    public boolean isWithinDeliveryRange(FoodProvider provider, String userAddress) {
+        double[] userCoords = googleMapsService.getCoordinates(userAddress);
+        if (userCoords == null) return false;
+
+        double distance = haversine(userCoords[0], userCoords[1], provider.getLatitude(), provider.getLongitude());
+
+        return distance <= 5.0;
+    }
+
+
     private double haversine(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371;
         double dLat = Math.toRadians(lat2 - lat1);

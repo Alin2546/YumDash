@@ -27,5 +27,15 @@ public class UserService {
         return usersRepo.findByEmail(email);
     }
 
+    public void resetPassword(String email, String newPassword) {
+
+        User user = usersRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilizatorul cu acest email nu a fost găsit"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        usersRepo.save(user);
+    }
+
 
 }

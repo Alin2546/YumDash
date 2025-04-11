@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Coșul Meu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/jpg" href="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        .header {
+            background-color: #FF7043;
+            padding: 20px 40px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .logo {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .continue-btn {
+            position: absolute;
+            right: 40px;
+            top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FF7043; /* Portocaliu */
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .item-image {
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .continue-btn i {
+            margin-left: 10px;
+        }
+
+        .continue-btn:hover {
+            background-color: #E64A19;
+        }
+
+        .cart-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            transition: transform 0.2s;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .item-price {
+            color: #777;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .item-total {
+            font-weight: bold;
+            color: #FF7043;
+            font-size: 18px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            background-color: #FF7043;
+            border: none;
+            color: white;
+            font-size: 18px;
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .quantity-btn:hover {
+            background-color: #E64A19;
+        }
+
+        .cart-footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .total-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .checkout-btn {
+            background-color: #FF7043;
+            border: none;
+            padding: 14px 32px;
+            font-size: 18px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background-color: #E64A19;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #888;
+            font-size: 18px;
+            padding: 60px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">YumDash</div>
+    <a href="/getFoodPage" class="continue-btn"><--- Continuă cumpărăturile </a>
+</div>
+
+<div class="cart-container">
+    <h1><i class="fas fa-shopping-cart"></i> Coșul tău</h1>
+
+    <div th:if="${cart != null and cart.size() > 0}">
+        <div th:each="entry : ${cart}" th:id="'item' + ${entry.key}" class="cart-item">
+
+        <img th:src="@{${foodProductMap[entry.key].imageurl}}" alt="Imagine produs" class="item-image" src=""/>
+            <div class="item-info">
+                <span class="item-name" th:text="${foodProductMap[entry.key].name}">Nume produs</span>
+                <span class="item-price" th:text="'Preț unitar: ' + ${#numbers.formatDecimal(foodProductMap[entry.key].price, 1, 2, 'POINT')} + ' lei'">Preț</span>
+            </div>
+
+            <div class="quantity-controls">
+
+                <form th:action="@{'/cart/decrease/' + ${entry.key}}" method="get" style="display:inline;">
+                    <button type="submit" class="quantity-btn">−</button>
+                </form>
+                <span th:text="${entry.value}" id="quantity-${entry.key}">1</span>
+
+                <form th:action="@{'/cart/increase/' + ${entry.key}}" method="get" style="display:inline;">
+                    <button type="submit" class="quantity-btn">+</button>
+                </form>
+            </div>
+
+            <div class="item-total" th:text="${#numbers.formatDecimal(foodProductMap[entry.key].price * entry.value, 1, 2, 'POINT')} + ' lei'">Total</div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="total-text">Total: <span th:text="${#numbers.formatDecimal(total, 1, 2, 'POINT')} + ' lei'">0.00 lei</span></div>
+            <form th:action="@{/cart/checkout}" method="post">
+                <button type="submit" class="checkout-btn">Finalizează Comanda</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="empty-message" th:if="${cart == null or cart.size() == 0}">
+        Coșul tău este gol 😢
+    </div>
+</div>
+
+</body>
+</html>

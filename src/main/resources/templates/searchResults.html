@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search Results - YumDash</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" type="image/jpg" href="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg">
   <style>
     .restaurant-card {
         border: none;
@@ -52,6 +53,27 @@
         text-align: left;
         text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
     }
+
+    .disabled-card {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  position: relative;
+}
+
+.disabled-card::after {
+  content: "Indisponibil";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #dc3545;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
   </style>
 </head>
 <body>
@@ -67,18 +89,29 @@
 <div class="container mt-4">
   <h1>Rezultate</h1>
   <div class="row g-4 mb-4">
-    <div th:if="${#lists.isEmpty(providers)}">
-      <p>Niciun restaurant gasit "<span th:text="${keyword}"></span>". Te rugam sa cauti altceva.</p>
-    </div>
-    <div th:each="provider : ${providers}" class="col-md-4">
+    <!-- Disponibile -->
+    <div th:each="provider : ${availableProviders}" class="col-md-4">
       <a th:href="@{/products(providerId=${provider.id})}" class="text-decoration-none">
         <div class="card restaurant-card">
-          <img src="https://via.placeholder.com/300" class="card-img-top" alt="Restaurant image" th:src="@{${provider.imageurl} ?: 'https://via.placeholder.com/300'}">
+          <img src="https://via.placeholder.com/300" class="card-img-top"
+               alt="Restaurant image" th:src="@{${provider.imageurl} ?: 'https://via.placeholder.com/300'}">
           <div class="card-body">
             <h5 class="card-title" th:text="${provider.name}"></h5>
           </div>
         </div>
-      </a>
+    </div>
+
+    <!-- Indisponibile -->
+    <div th:each="provider : ${unavailableProviders}" class="col-md-4">
+      <div class="card restaurant-card disabled-card" title="Indisponibil în zona ta">
+        <img src="https://via.placeholder.com/300" class="card-img-top"
+             alt="Restaurant image" th:src="@{${provider.imageurl} ?: 'https://via.placeholder.com/300'}">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${provider.name}"></h5>
+          <p class="text-muted">Indisponibil în zona ta</p>
+        </div>
+      </div>
+    </div>
     </div>
   </div>
 </div>

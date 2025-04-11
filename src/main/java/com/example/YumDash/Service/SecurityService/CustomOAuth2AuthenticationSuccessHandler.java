@@ -35,6 +35,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
             newUser.setEmail(email);
             newUser.setName(name);
             newUser.setProvider("google");
+            newUser.setRole("ROLE_USER");
             return userRepository.save(newUser);
         });
         response.sendRedirect("/getFoodPage");
