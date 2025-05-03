@@ -28,7 +28,8 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
         String email = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("name");
 
-
+        String sessionAddress = (String) request.getSession().getAttribute("savedAddress");
+        System.out.println("Adresa din sesiune: " + sessionAddress);
         User user = userRepository.findByEmail(email).orElseGet(() -> {
 
             User newUser = new User();
@@ -36,8 +37,20 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
             newUser.setName(name);
             newUser.setProvider("google");
             newUser.setRole("ROLE_USER");
+            if (sessionAddress != null && !sessionAddress.isBlank()) {
+                newUser.setAddress(sessionAddress);
+            }
+
+
             return userRepository.save(newUser);
         });
+
+        if (sessionAddress != null && (user.getAddress() == null || user.getAddress().isBlank())) {
+            user.setAddress(sessionAddress);
+            userRepository.save(user);
+        }
+
+        request.getSession().setAttribute("address", user.getAddress());
         response.sendRedirect("/getFoodPage");
     }
 }

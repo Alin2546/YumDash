@@ -20,6 +20,7 @@ public class User {
     private String password;
     private String role;
     private String provider;
+    private String address;
 
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

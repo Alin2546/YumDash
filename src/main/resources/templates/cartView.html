@@ -210,7 +210,7 @@
 
         <div class="cart-footer">
             <div class="total-text">Total: <span th:text="${#numbers.formatDecimal(total, 1, 2, 'POINT')} + ' lei'">0.00 lei</span></div>
-            <form th:action="@{/cart/checkout}" method="post">
+            <form th:action="@{/checkout}" method="get">
                 <button type="submit" class="checkout-btn">Finalizează Comanda</button>
             </form>
         </div>

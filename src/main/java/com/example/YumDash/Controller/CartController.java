@@ -96,4 +96,32 @@ public class CartController {
         session.setAttribute("cart", cart);
         return "redirect:/cart/view";
     }
+
+    @GetMapping("/checkout")
+    public String checkoutPage(Model model, HttpSession session) {
+        Map<Integer, Integer> cart = cartService.getCartFromSession(session);
+        Map<Integer, FoodProduct> foodProductMap = new HashMap<>();
+        for (Integer productId : cart.keySet()) {
+            foodProductMap.put(productId, foodProductRepo.findById(productId).orElse(null));
+        }
+        double total = cartService.calculateTotal(session, foodProductMap);
+
+        model.addAttribute("cart", cart);
+        model.addAttribute("foodProductMap", foodProductMap);
+        model.addAttribute("total", total);
+
+        return "checkout";
+    }
+
+    @GetMapping("/payment/success")
+    public String paymentSuccess() {
+        return "paymentSuccess";
+    }
+
+    @GetMapping("/payment/cancel")
+    public String paymentCancel() {
+        return "paymentCancel";
+    }
+
+
 }

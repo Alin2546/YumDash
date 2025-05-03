@@ -21,4 +21,5 @@ public class UserOrder {
     private String orderDate;
     private int amount;
     private String status;
+    private String address;
 }
