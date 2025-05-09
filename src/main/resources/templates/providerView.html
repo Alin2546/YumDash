@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionați Produsele - Restaurantul Dumneavoastră</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/jpg" href="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: 'Roboto', sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #fd7e14;
+            color: #fff;
+            font-size: 1.6rem;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            padding: 20px;
+        }
+        .card-body {
+            padding: 30px;
+        }
+        .form-control {
+            border-radius: 10px;
+        }
+        .btn-warning {
+            background-color: #fd7e14;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        .btn-warning:hover {
+            background-color: #e77f10;
+        }
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="container mt-5">
+
+<div class="card shadow p-4 mb-5">
+    <div class="card-header">
+        <h2>Restaurantul Dumneavoastră: <span th:text="${foodProvider.name}"></span></h2>
+    </div>
+
+    <div class="card-body">
+
+        <!-- Imagine restaurant -->
+        <div class="form-group mb-3">
+            <label for="storeImage" class="form-label fw-semibold">Imagine Restaurant:</label><br>
+            <img th:src="@{${foodProvider.imageurl}}" class="preview-image" alt="Imagine Restaurant" />
+        </div>
+
+        <!-- Buton pentru afișare formular schimbare imagine -->
+        <div class="text-end mb-3">
+            <a href="#" onclick="toggleImageForm(event)" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-edit"></i> Schimbă imaginea
+            </a>
+        </div>
+
+        <!-- Formular schimbare imagine -->
+        <form th:action="@{/updateRestaurantImage}" method="post" id="imageUpdateForm" style="display: none;">
+            <div class="form-group mb-3">
+                <input type="text" name="newImageUrl" id="newImageUrl" class="form-control"
+                       placeholder="Introduceți noul URL al imaginii" required>
+            </div>
+            <div class="text-end">
+                <button type="submit" class="btn btn-sm btn-warning">Salvează</button>
+            </div>
+        </form>
+
+        <h4 class="mt-4">Gestionați Produsele</h4>
+
+        <!-- FORMULARUL DE CREARE PRODUS -->
+        <form th:action="@{/saveProduct}" th:object="${productCreateDto}" method="post">
+            <div class="form-group mb-3">
+                <label for="productName">Numele Produsului:</label>
+                <input type="text" th:field="*{name}" id="productName" class="form-control" placeholder="Introduceți numele produsului" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="productPrice">Preț:</label>
+                <input type="number" th:field="*{price}" id="productPrice" class="form-control" placeholder="Introduceți prețul" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="productImageUrl">URL Imagine Produs:</label>
+                <input type="text" th:field="*{imageurl}" id="productImageUrl" class="form-control" placeholder="Introduceți URL-ul imaginii" required oninput="updatePreview()">
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="productCategory">Categorie:</label>
+                <select th:field="*{category}" id="productCategory" class="form-control" required>
+                    <option value="" disabled selected>Selectați o categorie</option>
+                    <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="imagePreview">Previzualizare Imagine:</label><br>
+                <img id="imagePreview" src="" alt="Previzualizare" class="preview-image" style="display:none;" />
+            </div>
+
+            <button type="submit" class="btn btn-warning">Adăugați Produs</button>
+        </form>
+
+        <hr>
+
+        <h4>Produse Existente</h4>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Nume</th>
+                <th>Preț</th>
+                <th>Categorie</th>
+                <th>Imagine</th>
+                <th>Acțiuni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${foodProvider.foodProducts}">
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.price}"></td>
+                <td th:text="${product.category}"></td>
+                <td>
+                    <img th:src="@{${product.imageurl}}" class="preview-image" alt="Imagine Produs"/>
+                </td>
+                <td>
+                    <form th:action="@{/deleteProduct/{id}(id=${product.id})}" method="post" style="display:inline;">
+                        <input type="hidden" name="productId" th:value="${product.id}" />
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Sunteți sigur că doriți să ștergeți acest produs?')">
+                            <i class="fas fa-trash"></i> Șterge
+                        </button>
+                    </form>
+                    <a th:href="@{/editProduct/{id}(id=${product.id})}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i> Editează
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- SCRIPTURI -->
+<script>
+    function updatePreview() {
+        var imageUrl = document.getElementById("productImageUrl").value;
+        var imagePreview = document.getElementById("imagePreview");
+
+        if (imageUrl) {
+            imagePreview.style.display = "block";
+            imagePreview.src = imageUrl;
+        } else {
+            imagePreview.style.display = "none";
+        }
+    }
+
+    function toggleImageForm(e) {
+        e.preventDefault();
+        const form = document.getElementById("imageUpdateForm");
+        form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>

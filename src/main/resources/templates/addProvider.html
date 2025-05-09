@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Înregistrează-te și Adaugă Restaurantul Tău</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link rel="icon" type="image/jpg" href="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg">
+  <style>
+    body {
+      background-color: #f7f9fc;
+      font-family: 'Roboto', sans-serif;
+    }
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+      background-color: #fd7e14;
+      color: #fff;
+      font-size: 1.6rem;
+      border-radius: 15px 15px 0 0;
+      text-align: center;
+      padding: 20px;
+    }
+    .card-body {
+      padding: 30px;
+    }
+    .form-control {
+      border-radius: 10px;
+    }
+    .btn-warning {
+      background-color: #fd7e14;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+    }
+    .btn-warning:hover {
+      background-color: #e77f10;
+    }
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      font-size: 1.1rem;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .text-muted {
+      font-size: 1.2rem;
+      font-style: italic;
+    }
+    .card-footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1rem;
+    }
+    .preview-image {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .image-preview-container {
+      display: none;
+      margin-top: 15px;
+      text-align: center;
+    }
+    .eye-icon {
+      position: absolute;
+      top: 70%;
+      right: 15px;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="container mt-5">
+
+<div class="card shadow p-4 mb-5">
+  <div class="card-header">
+    <h2>🚀 Adaugă Restaurantul Tău și Crește Veniturile!</h2>
+  </div>
+  <div class="card-body">
+    <p class="text-center text-muted mb-4">E simplu! Înregistrează-te și adaugă restaurantul sau magazinul tău pe YumDash pentru a atrage clienți noi și venituri suplimentare! 💸</p>
+
+    <form action="/saveProvider" method="post" enctype="multipart/form-data" th:object="${foodProviderDto}">
+      <div class="form-group mb-3">
+        <label for="name">Numele Restaurantului:</label>
+        <input type="text" th:field="*{name}" id="name" class="form-control" placeholder="Introduceți numele restaurantului" required>
+      </div>
+      <div class="form-group mb-3 position-relative">
+        <label for="address">Adresa Restaurantului:</label>
+        <input type="text" th:field="*{address}" id="address" class="form-control" placeholder="Introduceți adresa restaurantului" required autocomplete="off" oninput="fetchSuggestions(this.value)">
+        <div id="addressSuggestions" class="dropdown-menu show w-100" style="max-height: 200px; overflow-y: auto; display: none; position: absolute; z-index: 1000;"></div>
+      </div>
+      <div class="form-group mb-3">
+        <label for="email">Email:</label>
+        <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="Introduceți emailul" required>
+      </div>
+      <div class="form-group mb-3 position-relative">
+        <label for="password">Parola:</label>
+        <input type="password" th:field="*{password}" id="password" class="form-control" placeholder="Introduceți parola" required>
+        <i class="fas fa-eye eye-icon" id="eyeIcon" onclick="togglePassword()"></i> <!-- Iconița ochi -->
+      </div>
+      <div class="form-group mb-3">
+        <label for="imageurl">URL Imagine Restaurant:</label>
+        <input type="text" th:field="*{imageurl}" id="imageurl" class="form-control" placeholder="Introduceți URL-ul imaginii restaurantului" required oninput="previewUrlImage(event)">
+      </div>
+
+      <div class="image-preview-container" id="imagePreviewContainer">
+        <h5>Previzualizare Imagine:</h5>
+        <img id="imagePreview" class="preview-image" src="" alt="Previzualizare imagine" />
+      </div>
+
+      <button type="submit" class="btn btn-warning btn-block mt-3">Salvează</button>
+    </form>
+  </div>
+  <div class="card-footer">
+    <p class="text-muted">Pentru mai multe informații, contactați-ne pe <a href="mailto:support@yumdash.com">support@yumdash.com</a></p>
+  </div>
+</div>
+
+<script>
+  function previewUrlImage(event) {
+    const url = event.target.value;
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+
+    if (url.trim() !== '') {
+      imagePreview.src = url;
+      previewContainer.style.display = 'block';
+    } else {
+      previewContainer.style.display = 'none';
+    }
+  }
+
+  function fetchSuggestions(query) {
+    const dropdown = document.getElementById("addressSuggestions");
+    dropdown.innerHTML = "";
+
+    if (!query || query.length < 3) {
+      dropdown.style.display = "none";
+      return;
+    }
+
+    fetch(`/foodOwner/chooseAddress?address=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.length === 0) {
+          dropdown.style.display = "none";
+          return;
+        }
+
+        data.forEach(addr => {
+          const item = document.createElement("div");
+          item.classList.add("dropdown-item");
+          item.style.cursor = "pointer";
+          item.textContent = addr;
+          item.onclick = () => selectAddress(addr);
+          dropdown.appendChild(item);
+        });
+
+        dropdown.style.display = "block";
+      });
+  }
+
+  function selectAddress(selectedAddress) {
+    const addressInput = document.getElementById("address");
+    const dropdown = document.getElementById("addressSuggestions");
+    addressInput.value = selectedAddress;
+    dropdown.style.display = "none";
+  }
+
+  function togglePassword() {
+  const passwordField = document.getElementById("password");
+  const eyeIcon = document.getElementById("eyeIcon");
+
+  if (passwordField.type === "password") {
+    (type="password")
+    passwordField.type = "text";
+    eyeIcon.classList.remove("fa-eye-slash");
+    eyeIcon.classList.add("fa-eye");
+  } else {
+    (type="text")
+    passwordField.type = "password";
+    eyeIcon.classList.remove("fa-eye");
+    eyeIcon.classList.add("fa-eye-slash");
+  }
+}
+
+
+  document.addEventListener("click", function (event) {
+    const dropdown = document.getElementById("addressSuggestions");
+    if (!dropdown.contains(event.target) && event.target.id !== "address") {
+      dropdown.style.display = "none";
+    }
+  });
+</script>
+
+</body>
+</html>

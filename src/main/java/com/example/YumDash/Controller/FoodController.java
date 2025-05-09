@@ -1,6 +1,9 @@
 package com.example.YumDash.Controller;
 
+import com.example.YumDash.Model.Category;
+import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
+import com.example.YumDash.Repository.FoodProductRepo;
 import com.example.YumDash.Service.FoodService.FoodProductService;
 import com.example.YumDash.Service.FoodService.FoodProviderService;
 import com.example.YumDash.Util.AuthUtils;
@@ -26,10 +29,27 @@ public class FoodController {
     private final FoodProductService foodProductService;
 
     @GetMapping("/products")
-    public String getProductsByProvider(@RequestParam("providerId") int providerId, Model model) {
-        model.addAttribute("products", foodProductService.getProductsByProviderId(providerId));
+    public String getProductsByProvider(
+            @RequestParam("providerId") int providerId,
+            @RequestParam(name = "category", required = false) Category category,
+            Model model
+    ) {
+        List<FoodProduct> products;
+        FoodProvider provider = foodProviderService.findById(providerId);
+        if (category != null) {
+            products = foodProductService.getProductsByProviderIdAndCategory(providerId, category);
+        } else {
+            products = foodProductService.getProductsByProviderId(providerId);
+        }
+
+        model.addAttribute("foodProvider", provider);
+        model.addAttribute("products", products);
+        model.addAttribute("categories", Category.values());
+        model.addAttribute("selectedCategory", category);
+
         return "restaurantDetails";
     }
+
 
 
     @GetMapping("/search")

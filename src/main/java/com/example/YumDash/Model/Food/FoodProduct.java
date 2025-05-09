@@ -1,5 +1,6 @@
 package com.example.YumDash.Model.Food;
 
+import com.example.YumDash.Model.Category;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,8 +19,10 @@ public class FoodProduct {
     @JoinColumn(name = "food_provider_id")
     private FoodProvider foodProvider;
 
+
     private String name;
     private double price;
     private String imageurl;
+    private Category category;
 }
 

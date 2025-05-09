@@ -1,5 +1,6 @@
 package com.example.YumDash.Model.User;
 
+import com.example.YumDash.Model.Food.FoodProvider;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,5 +26,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserOrder> userOrders;
+
+    @OneToOne
+    @JoinColumn(name = "food_provider_id")
+    private FoodProvider foodProvider;
 
 }

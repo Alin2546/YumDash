@@ -83,6 +83,7 @@ h1 {
     width: 100%;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     transition: 0.3s;
+
 }
 
 .btn-search:hover {
@@ -142,14 +143,16 @@ h1 {
 #manualAddress {
     width: 270px;
     padding: 12px 15px;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     border: 2px solid #e67e22;
     border-radius: 25px;
-    margin-top: 10px;
+    height : 45px;
     background-color: white;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
     transition: border-color 0.3s ease-in-out;
     text-align: center;
+    position: relative;
+    top: -15px;
 
 }
 
@@ -171,7 +174,7 @@ h1 {
 .input-group .btn {
     position: absolute;
     right: 10px;
-    top: 60%;
+    top: 39%;
     transform: translateY(-50%);
     background-color: transparent;
     border: none;
@@ -180,6 +183,96 @@ h1 {
 
 .input-group .btn i {
     color: #f39c12;
+}
+        .info-section {
+    background: #fff;
+    padding: 80px 30px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.info-block h2 {
+    font-size: 2.4rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.info-block p {
+    font-size: 1.1rem;
+    color: #555;
+    max-width: 800px;
+    margin: 0 auto 50px;
+}
+
+.info-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    margin-bottom: 60px;
+}
+
+.card {
+    color: inherit;
+    text-decoration: none;
+    background: #f9f9f9;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 320px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    text-align: left;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h3 {
+    font-size: 1.3rem;
+    color: #f39c12;
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: #444;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.faq {
+    background: #f2f2f2;
+    padding: 50px 20px;
+    border-radius: 15px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.faq h2 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.faq ul {
+    text-align: left;
+    list-style: none;
+    padding-left: 0;
+}
+
+.faq li {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.see-more {
+    display: inline-block;
+    margin-top: 20px;
+    color: #f39c12;
+    font-weight: bold;
+    cursor: pointer;
+
 }
 
     </style>
@@ -225,6 +318,106 @@ h1 {
         </div>
     </div>
 </div>
+<section class="info-section">
+    <div class="info-block">
+        <h2>Câștigă bani livrând mâncare în România</h2>
+        <p>Plăți săptămânale, fără taxe ascunse. Tu alegi când și cum livrezi — cu bicicleta, mașina sau trotineta.</p>
+    </div>
+
+    <div class="info-cards">
+        <a href="/register/form" class="card">
+            <h3>Câștiguri sigure</h3>
+            <p>Curierii YumDash își primesc plata în fiecare săptămână, fără comisioane ascunse.</p>
+        </a>
+        <a href="/register/form" class="card">
+            <h3>Flexibilitate totală</h3>
+            <p>Tu alegi când vrei să lucrezi — dimineața, seara, în weekend sau ocazional.</p>
+        </a>
+        <a href="/register/form" class="card">
+            <h3>Tu alegi mijlocul de transport</h3>
+            <p>Poți livra cu ce vrei: bicicletă, trotinetă electrică sau mașină.</p>
+        </a>
+    </div>
+
+
+    <div class="info-block">
+        <h2>Dezvoltă-ți restaurantul în România</h2>
+        <p>Milioane de utilizatori comandă zilnic. Alătură-te platformei și crește-ți vânzările cu livrări rapide și sigure.</p>
+    </div>
+
+    <div class="info-cards">
+        <a href="/addProvider" class="card">
+            <h3>Mai mulți clienți</h3>
+            <p>Extinde-ți baza de clienți și fă-ți restaurantul cunoscut în orașul tău.</p>
+        </a>
+        <a href="/addProvider" class="card">
+            <h3>Informații utile</h3>
+            <p>Vezi date și grafice despre comenzi, creștere și performanță.</p>
+        </a>
+        <a href="/addProvider" class="card">
+            <h3>Noi livrăm pentru tine</h3>
+            <p>Tu te ocupi de mâncare, noi ne ocupăm de logistică.</p>
+        </a>
+    </div>
+
+    <div class="faq">
+        <h2>Întrebări frecvente</h2>
+        <ul>
+            <li>
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdown1" data-bs-toggle="dropdown" aria-expanded="false">
+                        🔍 Cum pot găsi restaurante cu livrare în apropiere de mine?
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdown1">
+                        <li><a class="dropdown-item" href="#">Răspuns: Poți căuta restaurante din apropiere direct din aplicație.</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdown2" data-bs-toggle="dropdown" aria-expanded="false">
+                        📦 YumDash livrează doar comenzi de mâncare?
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdown2">
+                        <li><a class="dropdown-item" href="#">Răspuns: YumDash nu livreaza exclusiv mancare, se pot livra un numar larg de produse.</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdown3" data-bs-toggle="dropdown" aria-expanded="false">
+                        🚶 Pot să preiau singur comanda plasată prin aplicație?
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdown3">
+                        <li><a class="dropdown-item" href="#">Răspuns: Da, poți prelua personal comanda dacă ești curierul desemnat.</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdown4" data-bs-toggle="dropdown" aria-expanded="false">
+                        🤔 Nu știu ce să comand. Găsesc recomandări?
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdown4">
+                        <li><a class="dropdown-item" href="#">Răspuns: Aplicația îți va oferi sugestii bazate pe preferințele tale.</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle" type="button" id="dropdown5" data-bs-toggle="dropdown" aria-expanded="false">
+                        🍽️ Ce fel de restaurante găsesc pe YumDash?
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdown5">
+                        <li><a class="dropdown-item" href="#">Răspuns: Pe YumDash găsești o gamă variată de restaurante, de la fast-food-uri la restaurante fine-dining.</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+        <a href="#" class="see-more">Vezi mai mult</a>
+    </div>
+
+</section>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMcq2hHT46sGd2qDrV_wV3V9rm1MFXJkQ&callback=initMap" async defer></script>

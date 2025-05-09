@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+
+    <!-- Font Awesome CDN for eye icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,6 +29,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
+            position: relative;
         }
 
         h2 {
@@ -35,6 +40,7 @@
 
         form div {
             margin-bottom: 15px;
+            position: relative;
         }
 
         label {
@@ -46,11 +52,28 @@
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 10px;
+            padding: 10px 40px 10px 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 16px;
+        }
+
+        .eye-icon {
+            position: absolute;
+            top: 69%;
+            right: 2px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            padding: 5px 10px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .eye-icon:hover {
+            color: #007bff;
         }
 
         button {
@@ -103,8 +126,8 @@
         }
 
         .google-btn, .github-btn {
-            width: 40px;  /* Smaller button size */
-            height: 40px;  /* Square shape */
+            width: 40px;
+            height: 40px;
             border-radius: 5px;
             border: none;
             display: flex;
@@ -146,6 +169,10 @@
         <div>
             <label for="password">Parola:</label>
             <input type="password" id="password" name="password" placeholder="Password" required>
+            <span class="eye-icon" onclick="togglePasswordVisibility()">
+    <i id="eyeIcon" class="fa-solid fa-eye-slash"></i>
+</span>
+
         </div>
         <div>
             <button type="submit">Trimite</button>
@@ -157,14 +184,11 @@
     </div>
 
     <div class="oauth-buttons">
-
         <a href="/oauth2/authorization/google">
             <button class="google-btn">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/180px-Google_%22G%22_logo.svg.png" alt="Google Logo"/>
             </button>
         </a>
-
-
         <a href="/oauth2/authorization/facebook">
             <button class="github-btn">
                 <img src="https://cdn2.iconfinder.com/data/icons/social-media-2285/512/1_Facebook_colored_svg_copy-128.png" alt="Facebook Logo"/>
@@ -176,5 +200,22 @@
         <a href="/register/form">Inregistrare</a> | <a href="/forgotPassword">Ai uitat parola?</a>
     </div>
 </div>
+
+<script>
+    function togglePasswordVisibility() {
+     const passwordInput = document.getElementById('password');
+     const eyeIcon = document.getElementById('eyeIcon');
+
+     if (passwordInput.type === 'password') {
+         passwordInput.type = 'text';
+         eyeIcon.classList.remove('fa-eye-slash');
+         eyeIcon.classList.add('fa-eye');
+     } else {
+         passwordInput.type = 'password';
+         eyeIcon.classList.remove('fa-eye');
+         eyeIcon.classList.add('fa-eye-slash');
+     }
+ }
+</script>
 </body>
 </html>

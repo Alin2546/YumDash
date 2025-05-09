@@ -1,7 +1,9 @@
 package com.example.YumDash.Service.FoodService;
 
 import com.example.YumDash.Model.Food.FoodProduct;
+import com.example.YumDash.Model.Food.FoodProvider;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -12,6 +14,8 @@ public class CartService {
 
     public static final String CART_SESSION_KEY = "cart";
 
+    @Autowired
+    private FoodProviderService foodProviderService;
 
     public void addToCart(HttpSession session, FoodProduct foodProduct) {
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
@@ -25,6 +29,19 @@ public class CartService {
         cart.put(foodProductId, cart.getOrDefault(foodProductId, 0) + 1);
     }
 
+    public String getRestaurantNameFromCart(Map<Integer, Integer> cart) {
+        if (cart == null || cart.isEmpty()) {
+            return null;
+        }
+
+
+        Integer firstProductId = cart.keySet().iterator().next();
+
+
+        FoodProvider foodProvider = foodProviderService.getFoodProviderByProductId(firstProductId);
+
+        return foodProvider != null ? foodProvider.getName() : "Restaurant necunoscut";
+    }
 
     public Map<Integer, Integer> getCartFromSession(HttpSession session) {
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute(CART_SESSION_KEY);
@@ -60,4 +77,5 @@ public class CartService {
         Map<Integer, Integer> cart = getCartFromSession(session);
         return cart.getOrDefault(foodProductId, 0);
     }
+
 }

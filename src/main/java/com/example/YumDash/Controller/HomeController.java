@@ -1,7 +1,9 @@
 package com.example.YumDash.Controller;
 
 
+import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
+import com.example.YumDash.Service.FoodService.CartService;
 import com.example.YumDash.Service.FoodService.FoodProviderService;
 import com.example.YumDash.Service.GoogleMapsService;
 import com.example.YumDash.Util.AuthUtils;
@@ -12,7 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,6 +26,7 @@ public class HomeController {
 
     private final GoogleMapsService googleMapsService;
     private final FoodProviderService foodProviderService;
+    private final CartService cartService;
 
 
     @GetMapping
@@ -55,12 +61,30 @@ public class HomeController {
             model.addAttribute("loggedInUser", username);
         }
 
+        @SuppressWarnings("unchecked")
+        Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
+
+
+        if (cart == null) {
+            cart = new HashMap<>();
+            session.setAttribute("cart", cart);
+        }
+
+
+        int cartSize = cart.size();
+        model.addAttribute("cartSize", cartSize);
+
         if (address != null && !address.isEmpty()) {
             List<FoodProvider> nearbyRestaurants = foodProviderService.getNearbyRestaurants(address);
             model.addAttribute("foodProviders", nearbyRestaurants);
         }
+
+        String restaurantName = cartService.getRestaurantNameFromCart(cart);
+        model.addAttribute("cartRestaurantName", restaurantName);
         return "foodPage";
     }
+
+
 
 }
 

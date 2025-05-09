@@ -6,6 +6,8 @@
     <title>YumDash</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/jpg" href="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         .restaurant-card {
             border: none;
@@ -43,73 +45,68 @@
             font-weight: bold;
         }
 
-        .row.mb-4 {
-            margin-bottom: 30px;
+        .cart-btn img {
+            width: 30px;
+            height: 30px;
+            margin-right: 8px;
         }
 
-        h1 {
-            font-weight: 900;
-            font-size: 4rem;
-            color: #f39c12;
-            text-align: left;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-        }
-
-        .login-register-buttons .dropdown-menu {
-            min-width: 200px;
-        }
-
-        .dropdown-menu {
-            left: 0 !important;
-        }
-
-        .cart-icon {
-            font-size: 1.5rem;
+        .cart-btn span {
+            font-weight: bold;
             color: #FFA500;
-            cursor: pointer;
-            padding: 0 15px;
         }
 
-        .cart-icon:hover {
-            color: #e67e22;
-        }
-
-        .cart-btn {
-            margin-right: 15px; /* Adds space between the cart and search bar */
+        .cart-btn .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 12px;
+            background-color: #f44336;
+            color: white;
+            padding: 3px 7px;
+            border-radius: 50%;
         }
     </style>
 </head>
 <body>
 
+<!-- SINGLE NAVBAR -->
+<nav class="navbar p-2" style="background-color: transparent; box-shadow: none;">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <!-- Logo + YumDash -->
+        <a href="/" class="navbar-brand d-flex align-items-center">
+            <span style="font-size: 2.5rem; font-weight: bold; color: #FFA500; margin-right: 10px;">YumDash</span>
+            <img src="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg" alt="YumDash Logo" style="width: 50px; height: 50px;" class="rounded-circle">
+        </a>
 
-<nav class="navbar navbar-light bg-light p-3">
-    <div class="container-fluid d-flex justify-content-between">
-        <a href="/" class="navbar-brand mb-0 h1" style="font-size: 2.5rem; color: #FFA500; text-decoration: none;">YumDash</a>
+        <!-- Dreapta: Search + Cart + Login -->
         <div class="d-flex align-items-center">
-            <div class="cart-btn">
-                <a href="/cart/view" class="btn btn-outline-warning">
-                    <img src="https://cdn-icons-png.flaticon.com/128/1170/1170576.png" alt="Shopping Cart" style="width: 30px; height: 30px;"/>
-                    <br/>
-                    <span>Coșul tău</span>
-                </a>
-            </div>
-
+            <!-- Căutare -->
             <form class="d-flex me-3" action="/search" method="get">
                 <input class="form-control me-2" type="search" name="keyword" placeholder="Ce preferi azi? :)" aria-label="Search" required>
-                <button class="btn btn-outline-success" type="submit">Cautare</button>
+                <button class="btn btn-outline-success" type="submit">Caută</button>
             </form>
 
+            <div class="d-flex align-items-center">
+                <div class="cart-btn me-3 position-relative">
+                    <a href="/cart/view" class="btn btn-outline-warning d-flex align-items-center">
+                        <img src="https://cdn-icons-png.flaticon.com/128/1170/1170576.png" alt="Shopping Cart" style="width: 30px; height: 30px; margin-right: 8px;">
+                        <span th:text="${cartRestaurantName != null ? cartRestaurantName : 'Coșul tău'}">Coșul tău</span>
+                        <span class="badge" th:text="${cartSize}">0</span>
+                    </a>
+                </div>
 
+            <!-- Login/Profil -->
             <div th:unless="${loggedInUser}" class="dropdown">
                 <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    Conectare / Inregistrare
+                    Conectare / Înregistrare
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="/loginForm">Conectare</a></li>
-                    <li><a class="dropdown-item" href="/register/form">Înregistrare</a></li>
+                    <li><a class="dropdown-item" href="/loginForm"><i class="fas fa-sign-in-alt me-2 text-primary"></i>Conectare</a></li>
+                    <li><a class="dropdown-item" href="/register/form"><i class="fas fa-user-plus me-2 text-success"></i>Înregistrare</a></li>
+                    <li><a class="dropdown-item d-flex align-items-start" href="/addProvider"><i class="fas fa-store text-warning me-2 mt-1"></i><span>Adaugă<br><small>restaurant/magazin</small></span></a></li>
                 </ul>
             </div>
-
 
             <div th:if="${loggedInUser}" class="dropdown">
                 <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -120,24 +117,25 @@
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <li><a class="dropdown-item" href="/profile">Profil</a></li>
                     <li><a class="dropdown-item" href="/orders">Comenzi</a></li>
-                    <li><a class="dropdown-item" href="/logout">Deconecteaza-te</a></li>
+                    <li><a class="dropdown-item" href="/logout">Deconectează-te</a></li>
                 </ul>
             </div>
         </div>
     </div>
 </nav>
 
-<div th:if="${#lists.isEmpty(foodProviders)}" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; ">
+<!-- Mesaj fallback când nu sunt restaurante -->
+<div th:if="${#lists.isEmpty(foodProviders)}" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center;">
     <img th:src="@{'https://ic.nordcdn.com/v1/https://sb.nordcdn.com/m/6212b03348df4437/original/blog-featured-no-location-found-error-on-an-iphone-svg.svg'}" alt="Nu livrăm aici!" style="max-width: 50%; height: 300px; border-radius: 20px;"/>
     <p style="font-size: 1.5rem; font-weight: bold; margin-top: 10px;">Ne pare rău, dar nu livrăm în această zonă!</p>
 </div>
 
-
+<!-- Restaurante -->
 <div class="container mt-4">
     <div class="row g-4 mb-4">
         <div th:each="foodProvider : ${foodProviders}" class="col-md-4">
             <a th:href="@{/products(providerId=${foodProvider.id})}" class="text-decoration-none text-dark">
-            <div class="card restaurant-card">
+                <div class="card restaurant-card">
                     <img src="https://via.placeholder.com/300" class="card-img-top" alt="Restaurant image" th:src="@{${foodProvider.imageurl} ?: 'https://via.placeholder.com/300'}">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${foodProvider.name}"></h5>
@@ -149,6 +147,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
 </html>

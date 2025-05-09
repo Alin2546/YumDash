@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -162,7 +163,11 @@ public class UserController {
 
     @PostMapping("/forgotPassword")
     public String processForgotPassword(@RequestParam("email") String email, Model model) {
-
+        Optional<User> userOptional = userService.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            model.addAttribute("error", "Utilizatorul cu acest email nu a fost găsit.");
+            return "forgotPassword";
+        }
         String subject = "Resetare parolă";
         String resetLink = "http://localhost:8080/resetPasswordForm?email=" + email;
 
@@ -180,6 +185,7 @@ public class UserController {
                 "</html>";
 
         try {
+
             emailService.sendHtmlEmail(email, subject, htmlMessage);
             model.addAttribute("email", email);
             return "emailSentView";

@@ -22,4 +22,8 @@ public class UserOrder {
     private int amount;
     private String status;
     private String address;
+    private String paymentMethod;
+    private String deliveryMethod;
+    private String comment;
+    private boolean needCutlery;
 }

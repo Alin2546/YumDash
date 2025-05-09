@@ -10,9 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 
 @Configuration
@@ -35,7 +34,7 @@ public class Config {
                 .formLogin(form -> form
                         .loginPage("/loginForm")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/getFoodPage", true)
+                        .successHandler(successHandler())
                         .failureUrl("/loginForm?error=true")
                         .permitAll()
                 ).logout(logout -> logout
@@ -55,6 +54,23 @@ public class Config {
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler successHandler() {
+        return (request, response, authentication) -> {
+            var roles = authentication.getAuthorities();
+
+            if (roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_FOOD_PROVIDER"))) {
+                response.sendRedirect("/provider/products");
+            } else if (roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_USER"))) {
+                response.sendRedirect("/getFoodPage");
+            } else if (roles.stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
+                    response.sendRedirect("/admin/dashboard");
+            } else {
+                response.sendRedirect("/default");
+            }
+        };
     }
 
 }
