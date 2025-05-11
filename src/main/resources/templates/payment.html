@@ -46,12 +46,6 @@
       margin-bottom: 30px;
     }
 
-    #payment-form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
     #submit {
       background-color: #5469d4;
       color: white;
@@ -62,6 +56,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       font-weight: bold;
+      width: 550px;
     }
 
     #submit:hover {
@@ -74,7 +69,6 @@
       margin-top: 20px;
     }
 
-    /* Design responsive */
     @media (max-width: 600px) {
       .payment-container {
         padding: 20px;
@@ -95,20 +89,20 @@
     Total de plată: <span th:text="${total}">0.00</span> lei
   </div>
 
-  <form id="payment-form">
-    <div id="card-element">
-
-    </div>
-
+  <form id="payment-form" method="POST" action="/online">
+    <div id="card-element"></div>
     <button type="submit" id="submit">Plătește acum</button>
   </form>
+
+  <form id="hidden-form" method="POST" action="/online" style="display: none;">
+    <input type="hidden" name="paymentIntentId" id="paymentIntentId">
+  </form>
+
 
   <div class="footer">
     <p>Plătești cu Stripe, o soluție de plată sigură și rapidă.</p>
   </div>
 </div>
-
-<script src="https://js.stripe.com/v3/"></script>
 
 <script th:inline="javascript">
   let clientSecret = [[${clientSecret}]];
@@ -116,37 +110,39 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const stripe = Stripe("pk_test_51RE6Yy2Xp6cnh4OlQolvY0GKAqmd09HIU8daGndb3ADEdnKfbW2p4GdKLGjzJ3eBZpJOYJnpcdSiVu8yvJnEOKMg00JtXqXOk0");
-    const elements = stripe.elements();
-    const card = elements.create("card");
-    card.mount("#card-element");
+   const stripe = Stripe("pk_test_51RE6Yy2Xp6cnh4OlQolvY0GKAqmd09HIU8daGndb3ADEdnKfbW2p4GdKLGjzJ3eBZpJOYJnpcdSiVu8yvJnEOKMg00JtXqXOk0");
+   const elements = stripe.elements();
+   const card = elements.create("card");
+   card.mount("#card-element");
 
-    const form = document.getElementById("payment-form");
+   const paymentForm = document.getElementById("payment-form");
 
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
+   paymentForm.addEventListener("submit", async function (event) {
+     event.preventDefault();
 
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: card,
-          billing_details: {
-            name: "Test User",
-          },
-        },
-      });
+     const result = await stripe.confirmCardPayment(clientSecret, {
+       payment_method: {
+         card: card,
+         billing_details: {
+           name: "Test User"
+         }
+       }
+     });
 
-      if (result.error) {
-        console.error(result.error.message);
-        alert("A apărut o eroare: " + result.error.message);
-      } else {
-        if (result.paymentIntent.status === "succeeded") {
-          window.location.href = "/payment/success";
-        } else {
-          window.location.href = "/payment/cancel";
-        }
-      }
-    });
-  });
+     if (result.error) {
+       console.error(result.error.message);
+       alert("A apărut o eroare: " + result.error.message);
+       window.location.href = "/payment/cancel";
+     } else {
+       if (result.paymentIntent.status === "succeeded") {
+         document.getElementById("paymentIntentId").value = result.paymentIntent.id;
+         document.getElementById("hidden-form").submit();
+       } else {
+         window.location.href = "/payment/cancel";
+       }
+     }
+   });
+ });
 </script>
 </body>
 </html>

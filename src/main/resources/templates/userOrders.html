@@ -77,7 +77,7 @@
         <ul class="userOrder-list">
             <li th:each="userOrder : ${userOrders}" class="userOrder-item">
                 <p class="userOrder-date"><strong>Data comenzii:</strong> <span th:text="${userOrder.orderDate}">Order Date</span></p>
-                <p class="userOrder-amount"><strong>Suma totala:</strong> <span th:text="${userOrder.amount + ' RON'}">Amount</span></p>
+                <p class="userOrder-amount"><strong>Suma totala:</strong> <span th:text="${#numbers.formatDecimal(userOrder.amount, 1, 2)}">Amount</span> RON</p>
                 <p class="userOrder-status"><strong>Statusul comenzii:</strong> <span th:text="${userOrder.status}">Status</span></p>
             </li>
         </ul>

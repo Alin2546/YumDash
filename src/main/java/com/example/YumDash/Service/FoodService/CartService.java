@@ -3,6 +3,7 @@ package com.example.YumDash.Service.FoodService;
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class CartService {
 
     public static final String CART_SESSION_KEY = "cart";
 
-    @Autowired
-    private FoodProviderService foodProviderService;
+
+    private final FoodProviderService foodProviderService;
 
     public void addToCart(HttpSession session, FoodProduct foodProduct) {
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");

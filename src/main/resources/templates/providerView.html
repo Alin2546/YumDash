@@ -64,14 +64,14 @@
             <img th:src="@{${foodProvider.imageurl}}" class="preview-image" alt="Imagine Restaurant" />
         </div>
 
-        <!-- Buton pentru afișare formular schimbare imagine -->
+
         <div class="text-end mb-3">
             <a href="#" onclick="toggleImageForm(event)" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-edit"></i> Schimbă imaginea
             </a>
         </div>
 
-        <!-- Formular schimbare imagine -->
+
         <form th:action="@{/updateRestaurantImage}" method="post" id="imageUpdateForm" style="display: none;">
             <div class="form-group mb-3">
                 <input type="text" name="newImageUrl" id="newImageUrl" class="form-control"
@@ -84,7 +84,7 @@
 
         <h4 class="mt-4">Gestionați Produsele</h4>
 
-        <!-- FORMULARUL DE CREARE PRODUS -->
+
         <form th:action="@{/saveProduct}" th:object="${productCreateDto}" method="post">
             <div class="form-group mb-3">
                 <label for="productName">Numele Produsului:</label>
@@ -154,8 +154,52 @@
         </table>
     </div>
 </div>
+<hr>
 
-<!-- SCRIPTURI -->
+<h4>Comenzile Primite</h4>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Produse</th>
+        <th>Adresă Livrare</th>
+        <th>Metodă Plată</th>
+        <th>Status</th>
+        <th>Acțiuni</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${orders}">
+        <td th:text="${order.id}"></td>
+        <td>
+            <ul class="mb-0">
+                <li th:each="item : ${order.items}">
+                    <span th:if="${item.foodProduct != null}" th:text="${item.foodProduct.name} + ' x' + ${item.quantity}"></span>
+                    <span th:unless="${item.foodProduct != null}">Produs Inexistent</span>
+                </li>
+            </ul>
+        </td>
+        <td th:text="${order.address}"></td>
+        <td th:text="${order.paymentMethod}"></td>
+        <td>
+            <span class="badge bg-secondary" th:text="${order.status}"></span>
+        </td>
+        <td>
+            <form th:action="@{/provider/orders/{id}/accept(id=${order.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-success btn-sm" th:disabled="${order.status != 'Comanda Trimisa'}">
+                    <i class="fas fa-check"></i> Acceptă
+                </button>
+            </form>
+            <form th:action="@{/provider/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm" th:disabled="${order.status != 'Comanda Trimisa'}">
+                    <i class="fas fa-times"></i> Anulează
+                </button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
 <script>
     function updatePreview() {
         var imageUrl = document.getElementById("productImageUrl").value;

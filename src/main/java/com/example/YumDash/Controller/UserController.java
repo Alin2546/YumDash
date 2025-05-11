@@ -33,7 +33,7 @@ public class UserController {
     private final UserService userService;
     private final OrderService orderService;
     private final EmailService emailService;
-    private final UserRepo userRepo;
+
 
 
     @GetMapping("/register/form")

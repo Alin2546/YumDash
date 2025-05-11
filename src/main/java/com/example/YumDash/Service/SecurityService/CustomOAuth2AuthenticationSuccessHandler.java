@@ -29,7 +29,6 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
         String name = oauth2User.getAttribute("name");
 
         String sessionAddress = (String) request.getSession().getAttribute("savedAddress");
-        System.out.println("Adresa din sesiune: " + sessionAddress);
         User user = userRepository.findByEmail(email).orElseGet(() -> {
 
             User newUser = new User();

@@ -1,7 +1,12 @@
 package com.example.YumDash.Model.User;
 
+import com.example.YumDash.Model.Food.FoodProvider;
+import com.example.YumDash.Model.Food.OrderItem;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user_orders")
@@ -18,12 +23,18 @@ public class UserOrder {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "food_provider_id")
+    private FoodProvider foodProvider;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items = new ArrayList<>();
+
     private String orderDate;
-    private int amount;
+    private double amount;
     private String status;
     private String address;
     private String paymentMethod;
     private String deliveryMethod;
     private String comment;
-    private boolean needCutlery;
 }

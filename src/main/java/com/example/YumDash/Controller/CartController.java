@@ -1,5 +1,6 @@
 package com.example.YumDash.Controller;
 
+import com.example.YumDash.Model.Dto.CheckoutDto;
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
 import com.example.YumDash.Repository.FoodProductRepo;
@@ -113,6 +114,7 @@ public class CartController {
             }
         }
 
+
         model.addAttribute("selectedRestaurantId", selectedRestaurantId);
         return "cartView";
     }
@@ -141,7 +143,6 @@ public class CartController {
 
     @PostMapping("/increase/{productId}")
     public String increaseItemQuantity(@PathVariable Integer productId, HttpSession session) {
-        @SuppressWarnings("unchecked")
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();

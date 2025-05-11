@@ -115,12 +115,12 @@
         }
        .restaurant-image {
     display: block;
-    margin: 20px auto; /* Centrarea imaginii pe orizontală */
-    width: 250px; /* Dimensiune ajustabilă */
-    height: 250px; /* Dimensiune ajustabilă */
-    object-fit: cover; /* Păstrează proporțiile imaginii fără a o distorsiona */
-    border-radius: 12px; /* Marginile rotunjite pentru un aspect mai elegant */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adaugă umbra subtile */
+    margin: 20px auto;
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
     </style>
@@ -171,8 +171,7 @@
                 <div class="form-section">
                     <div class="form-group">
                         <label for="deliveryAddress">Adresă de livrare:</label>
-                        <input type="text" id="deliveryAddress" name="deliveryAddress"
-                               th:value="${deliveryAddress}" class="form-control"
+                        <input type="text" id="deliveryAddress" name="deliveryAddress" th:value="${deliveryAddress}" class="form-control"
                                placeholder="Ex: Strada, Nr., Oraș" />
                     </div>
                     <div id="map"></div>
@@ -181,35 +180,35 @@
                     <input type="hidden" id="longitude" name="longitude" th:value="${longitude}" />
 
                     <div class="form-group">
-                        <label for="bloc">Bloc:</label>
-                        <input type="text" id="bloc" name="bloc" class="form-control" />
+                        <label for="block">Bloc:</label>
+                        <input type="text" id="block" name="block" class="form-control" />
                     </div>
 
                     <div class="form-group">
-                        <label for="scara">Scară:</label>
-                        <input type="text" id="scara" name="scara" class="form-control" />
+                        <label for="staircase">Scară:</label>
+                        <input type="text" id="staircase" name="staircase" class="form-control" />
                     </div>
 
                     <div class="form-group">
-                        <label for="apartament">Apartament:</label>
-                        <input type="text" id="apartament" name="apartament" class="form-control" />
+                        <label for="apartment">Apartament:</label>
+                        <input type="text" id="apartment" name="apartment" class="form-control" />
                     </div>
 
                     <div class="form-group" style="flex: 1 1 100%;">
-                        <label for="instructions">Instrucțiuni pentru curier:</label>
-                        <textarea id="instructions" name="instructions" class="form-control" rows="3"
+                        <label for="comment">Instrucțiuni pentru curier:</label>
+                        <textarea id="comment" name="comment" class="form-control" rows="3"
                                   placeholder="Ex: Sună la interfon, lasă la ușă etc."></textarea>
                     </div>
 
                     <div class="delivery-options">
-                        <label><input type="radio" name="deliveryType" value="delivery" required> Livrare</label>
-                        <label><input type="radio" name="deliveryType" value="pickup" required> Preluare personală</label>
+                        <label><input type="radio" name="deliveryMethod" value="delivery" required> Livrare</label>
+                        <label><input type="radio" name="deliveryMethod" value="pickup" required> Preluare personală</label>
                     </div>
 
                     <div class="radio-options">
                         <label>Metodă de plată:</label>
-                        <label><input type="radio" id="cash" name="paymentMethod" value="cash" required> Numerar</label>
-                        <label><input type="radio" id="card" name="paymentMethod" value="card" required> Card la livrare</label>
+                        <label><input type="radio" id="cash" name="paymentMethod" value="Cash" required> Numerar</label>
+                        <label><input type="radio" id="card" name="paymentMethod" value="Card on Delivery" required> Card la livrare</label>
                         <label><input type="radio" id="online" name="paymentMethod" value="online" required> Online</label>
                     </div>
                     <div class="cart-summary">
@@ -219,9 +218,6 @@
                         <p>Taxă serviciu: <span th:text="${#numbers.formatDecimal(serviceFee, 1, 2)}">0.00</span> RON</p>
                         <h3>Total: <span th:text="${#numbers.formatDecimal(total, 1, 2)}">0.00</span> RON</h3>
                     </div>
-                    <p>Taxă livrare:
-                        <span th:text="${deliveryFee}">0.00</span> RON
-                    </p>
                     <div th:if="${deliveryFee == 0.0}" class="free-delivery-message">
                         <strong style="color: green;">🎉 Ai livrare gratuită pentru că ai comandat peste 100 RON!</strong>
                     </div>
@@ -229,6 +225,7 @@
                     <button type="submit" class="checkout-btn">Finalizează comanda</button>
                 </div>
             </form>
+
         </div>
     </div>
 
@@ -304,7 +301,10 @@
         });
     }
 
+
     window.addEventListener("load", initMap);
+
+
 </script>
 
 </body>

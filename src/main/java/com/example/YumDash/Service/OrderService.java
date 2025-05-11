@@ -13,7 +13,17 @@ import java.util.List;
 public class OrderService {
     private final OrderRepo orderRepo;
 
+    public void acceptOrder(int id) {
+        UserOrder order = orderRepo.findById(id).orElseThrow();
+        order.setStatus("ACCEPTATA");
+        orderRepo.save(order);
+    }
 
+    public void cancelOrder(int id) {
+        UserOrder order = orderRepo.findById(id).orElseThrow();
+        order.setStatus("ANULATA");
+        orderRepo.save(order);
+    }
 
     public List<UserOrder> findOrdersByUser(User user) {
         return orderRepo.findByUser(user);

@@ -6,11 +6,11 @@ import com.example.YumDash.Model.Dto.ProductCreateDto;
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
 import com.example.YumDash.Model.User.User;
-import com.example.YumDash.Repository.FoodProductRepo;
-import com.example.YumDash.Repository.FoodProviderRepo;
-import com.example.YumDash.Repository.UserRepo;
+import com.example.YumDash.Model.User.UserOrder;
+import com.example.YumDash.Repository.*;
 import com.example.YumDash.Service.FoodService.FoodProviderService;
 import com.example.YumDash.Service.GoogleMapsService;
+import com.example.YumDash.Service.OrderService;
 import com.example.YumDash.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -32,6 +32,9 @@ public class FoodOwnerController {
     private final GoogleMapsService googleMapsService;
     private final FoodProviderService foodProviderService;
     private final FoodProductRepo foodProductRepo;
+    private final OrderRepo orderRepo;
+    private final OrderService orderService;
+    private final OrderItemRepository orderItemRepo;
 
     @GetMapping("/addProvider")
     public String showAddForm(Model model, @RequestParam(value = "status", required = false) String status) {
@@ -105,6 +108,8 @@ public class FoodOwnerController {
             model.addAttribute("foodProducts", foodProvider.getFoodProducts());
             model.addAttribute("categories", Category.values());
             model.addAttribute("productCreateDto", new ProductCreateDto());
+            List<UserOrder> orders = orderRepo.findByFoodProvider(foodProvider);
+            model.addAttribute("orders", orders);
         } else {
             model.addAttribute("error", "Food provider not found.");
         }
@@ -140,7 +145,12 @@ public class FoodOwnerController {
 
     @PostMapping("/deleteProduct/{id}")
     public String deleteProduct(@PathVariable("id") int id) {
+        if (orderItemRepo.countByFoodProductId(id) > 0) {
+            orderItemRepo.unsetFoodProductInOrderItems(id);
+        }
+
         foodProductRepo.deleteById(id);
+
         return "redirect:/provider/products";
     }
 
@@ -181,5 +191,16 @@ public class FoodOwnerController {
     }
 
 
+    @PostMapping("/provider/orders/{id}/accept")
+    public String acceptOrder(@PathVariable int id) {
+        orderService.acceptOrder(id);
+        return "redirect:/provider/products";
+    }
+
+    @PostMapping("/provider/orders/{id}/cancel")
+    public String cancelOrder(@PathVariable int id) {
+        orderService.cancelOrder(id);
+        return "redirect:/provider/products";
+    }
 
 }
