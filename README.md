@@ -30,14 +30,14 @@
 ## 📸 Screenshots
 
 #### Landing page
-![Landing page - variantă 1](screenshots/Screenshot 2025-05-20 205712.png)
-![Landing page - variantă 2](screenshots/Screenshot 2025-05-20 205722.png)
-![Landing page - variantă 3](screenshots/Screenshot 2025-05-20 205728.png)
-![Landing page - variantă 4](screenshots/Screenshot 2025-05-20 205745.png)
+![Landing page - variantă 1](screenshots/Screenshot 2025-05-20_205712.png)
+![Landing page - variantă 2](screenshots/Screenshot 2025-05-20_205722.png)
+![Landing page - variantă 3](screenshots/Screenshot 2025-05-20_205728.png)
+![Landing page - variantă 4](screenshots/Screenshot 2025-05-20_205745.png)
 
 #### Register / Login
-![Register](screenshots/screenshot2.png)
-![Login](screenshots/Screenshot 2025-05-20 205828.png)
+![Register](screenshots/Screenshot 2025-05-20_205828.png)
+![Login](screenshots/Screenshot 2025-05-20_205811.png)
 
 ---
 
