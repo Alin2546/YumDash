@@ -30,66 +30,13 @@
 ## 📸 Screenshots
 
 ### Landing page
-![Landing page - variantă 1](screenshots/Screenshot_2025-05-20_205712.png)  
-![Landing page - variantă 2](screenshots/Screenshot_2025-05-20_205722.png)  
-![Landing page - variantă 3](screenshots/Screenshot_2025-05-20_205728.png)  
-![Landing page - variantă 4](screenshots/Screenshot_2025-05-20_205745.png)
+![Landing page - variantă 1](screenshots/homepage.png)  
+![Landing page - variantă 2](screenshots/homepage4.png)  
+![Landing page - variantă 3](screenshots/homepage3.png)  
+![Landing page - variantă 4](screenshots/homepage2.png)
 
 ### Register / Login
-![Register](screenshots/Screenshot_2025-05-20_205828.png)  
-![Login](screenshots/Screenshot_2025-05-20_205811.png)
+![Register](screenshots/register.png)  
+![Login](screenshots/login.png)
 
----
 
-### 🍽️ Restaurants & Menus
-
-#### Restaurant listing
-![Restaurant listing](screenshots/screenshot3.png)
-
-#### Menu page
-![Menu page](screenshots/screenshot4.png)
-
-#### Search/filter restaurants
-![Search](screenshots/screenshot5.png)
-
----
-
-### 🛒 Cart & Orders
-
-#### Add to cart
-![Add to cart](screenshots/screenshot6.png)
-
-#### Cart page
-![Cart](screenshots/screenshot7.png)
-
-#### Checkout options (delivery/pickup, payment)
-![Checkout options](screenshots/screenshot8.png)
-
-#### Order confirmation
-![Order confirmation](screenshots/screenshot9.png)
-
-#### Order history
-![Order history](screenshots/screenshot10.png)
-
----
-
-### ⚙️ Profile Management
-
-#### View profile
-![View profile](screenshots/screenshot11.png)
-
-#### Edit profile
-![Edit profile](screenshots/screenshot12.png)
-
----
-
-### 🛠️ Admin Dashboard (
-
-#### Admin login
-![Admin login](screenshots/screenshot13.png)
-
-#### Manage restaurants
-![Manage restaurants](screenshots/screenshot14.png)
-
-#### Manage orders
-![Manage orders](screenshots/screenshot15.png)
