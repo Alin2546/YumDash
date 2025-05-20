@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -60,23 +61,23 @@ public class HomeController {
             String username = AuthUtils.extractUsername(authentication.getPrincipal());
             model.addAttribute("loggedInUser", username);
         }
-
         @SuppressWarnings("unchecked")
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
-
 
         if (cart == null) {
             cart = new HashMap<>();
             session.setAttribute("cart", cart);
         }
 
-
         int cartSize = cart.size();
         model.addAttribute("cartSize", cartSize);
 
         if (address != null && !address.isEmpty()) {
             List<FoodProvider> nearbyRestaurants = foodProviderService.getNearbyRestaurants(address);
-            model.addAttribute("foodProviders", nearbyRestaurants);
+            List<FoodProvider> activeRestaurants = nearbyRestaurants.stream()
+                    .filter(fp -> fp.getUser() != null && Boolean.TRUE.equals(fp.getUser().isActive()))
+                    .collect(Collectors.toList());
+            model.addAttribute("foodProviders", activeRestaurants);
         }
 
         String restaurantName = cartService.getRestaurantNameFromCart(cart);

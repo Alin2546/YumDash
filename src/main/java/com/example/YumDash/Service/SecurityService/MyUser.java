@@ -35,5 +35,9 @@ public class MyUser implements UserDetails {
         return user.getName();
     }
 
+    @Override
+    public boolean isEnabled() { return user.isActive(); }
+
+
 
 }

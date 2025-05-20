@@ -86,7 +86,7 @@
   <h2>Finalizează plata</h2>
 
   <div class="total-price">
-    Total de plată: <span th:text="${total}">0.00</span> lei
+    Total de plată: <span th:text="${#numbers.formatDecimal(total, 1, 2)}">0.00</span> lei
   </div>
 
   <form id="payment-form" method="POST" action="/online">

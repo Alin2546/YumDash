@@ -1,17 +1,11 @@
 package com.example.YumDash.Service.FoodService;
-
 import com.example.YumDash.Model.Category;
+import com.example.YumDash.Model.Dto.ProductUpdateDto;
 import com.example.YumDash.Model.Food.FoodProduct;
-import com.example.YumDash.Model.Food.FoodProvider;
-import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Repository.FoodProductRepo;
-import com.example.YumDash.Repository.FoodProviderRepo;
-import com.example.YumDash.Repository.UserRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +14,17 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class FoodProductService {
+
     private final FoodProductRepo foodProductRepo;
 
-
-
-    public List<FoodProduct> getProductsByProviderId(int providerId) {
-        return foodProductRepo.findByFoodProviderId(providerId);
+    public ProductUpdateDto toDto(FoodProduct product) {
+        ProductUpdateDto dto = new ProductUpdateDto();
+        dto.setName(product.getName());
+        dto.setPrice(product.getPrice());
+        dto.setImageurl(product.getImageurl());
+        dto.setCategory(product.getCategory());
+        return dto;
     }
-
 
     public Map<Integer, FoodProduct> getAllFoodProducts() {
 
@@ -41,7 +38,11 @@ public class FoodProductService {
         return foodProductMap;
     }
 
-    public List<FoodProduct> getProductsByProviderIdAndCategory(int providerId, Category category) {
-        return foodProductRepo.findByFoodProviderIdAndCategory(providerId, category);
+    public List<FoodProduct> getAvailableProductsByProviderId(int providerId) {
+        return foodProductRepo.findByFoodProviderIdAndAvailable(providerId, true);
+    }
+
+    public List<FoodProduct> getAvailableProductsByProviderIdAndCategory(int providerId, Category category) {
+        return foodProductRepo.findByFoodProviderIdAndCategoryAndAvailable(providerId, category, true);
     }
 }

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificare Cod</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f7fc;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .card p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .email-icon {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            font-size: 1.1rem;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1.1rem;
+        }
+
+        .alert {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+
+
+    <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" alt="Email trimis" class="email-icon"/>
+
+    <h3>Email trimis!</h3>
+
+    <p>Am trimis un email la adresa:</p>
+    <p><strong th:text="${email}">adresa@example.com</strong></p>
+    <p>Introduceți codul de verificare primit:</p>
+
+
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+    </div>
+
+
+    <form action="/verifyCode" method="post">
+        <input type="hidden" name="email" th:value="${email}"/>
+        <input type="text" name="verificationCode" class="form-control" placeholder="Introdu codul primit" required/>
+        <button type="submit" class="btn btn-primary w-100">Verifică</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,84 +1,110 @@
 <!DOCTYPE html>
-<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Panou de Administrare</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/jpg" href="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg">
-
+    <meta charset="UTF-8" />
+    <title>Administrare YumDash</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #fefefe;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        h2 {
+            font-weight: 600;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: #222;
+        }
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 2rem 1.5rem;
+            width: 280px;
+            box-shadow: 0 3px 8px rgb(0 0 0 / 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: box-shadow 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 6px 15px rgb(0 0 0 / 0.15);
+        }
+        .card h4 {
+            margin-bottom: 1.25rem;
+            color: #333;
+            text-align: center;
+            font-weight: 700;
+        }
+        .card .count {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: #555;
+        }
+        .btn-view {
+            padding: 0.6rem 1.2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 4px;
+            border: none;
+            background-color: #0d6efd;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        .btn-view:hover {
+            background-color: #084aad;
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body class="container py-5">
 
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">Panou de Administrare</h2>
+<h2>Panou Administrare YumDash</h2>
 
-    <div class="card mb-5">
-        <div class="card-header bg-primary text-white">
-            <h5>Utilizatori Înregistrați</h5>
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered table-striped">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Rol</th>
-                    <th>Acțiuni</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.id}"></td>
-                    <td th:text="${user.email}"></td>
-                    <td th:text="${user.role}"></td>
-                    <td>
-                        <form th:action="@{'/admin/deleteUser/' + ${user.id}}" method="post" onsubmit="return confirm('Ești sigur că vrei să ștergi acest utilizator?');">
-                            <button type="submit" class="btn btn-danger btn-sm">Șterge</button>
-                        </form>
-                    </td>
-                </tr>
-                <tr th:if="${users.isEmpty()}">
-                    <td colspan="4" class="text-center">Nu există utilizatori înregistrați.</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+<div class="dashboard-container">
+
+    <div class="card">
+        <h4>Utilizatori Activi</h4>
+        <div class="count" th:text="${usersActive.size()}">0</div>
+        <a th:href="@{/admin/users/active}" class="btn-view">Vezi lista</a>
     </div>
 
     <div class="card">
-        <div class="card-header bg-success text-white">
-            <h5>Furnizori de Mâncare</h5>
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered table-striped">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Nume</th>
-                    <th>Acțiuni</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="provider : ${foodProviders}">
-                    <td th:text="${provider.id}"></td>
-                    <td th:text="${provider.email}"></td>
-                    <td th:text="${provider.name}"></td>
-                    <td>
-                        <form th:action="@{'/admin/deleteProvider/' + ${provider.id}}" method="post" onsubmit="return confirm('Ești sigur că vrei să ștergi acest furnizor?');">
-                            <button type="submit" class="btn btn-danger btn-sm">Șterge</button>
-                        </form>
-                    </td>
-                </tr>
-                <tr th:if="${foodProviders.isEmpty()}">
-                    <td colspan="4" class="text-center">Nu există furnizori de mâncare.</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        <h4>Utilizatori Inactivi</h4>
+        <div class="count" th:text="${usersInactive.size()}">0</div>
+        <a th:href="@{/admin/users/inactive}" class="btn-view">Vezi lista</a>
+    </div>
+
+    <div class="card">
+        <h4>Magazine Active</h4>
+        <div class="count" th:text="${providersActive.size()}">0</div>
+        <a th:href="@{/admin/providers/active}" class="btn-view">Vezi lista</a>
+    </div>
+
+    <div class="card">
+        <h4>Magazine Inactive</h4>
+        <div class="count" th:text="${providersInactive.size()}">0</div>
+        <a th:href="@{/admin/providers/inactive}" class="btn-view">Vezi lista</a>
+    </div>
+
+    <div class="card" style="width: 600px;">
+        <h4>Comenzi</h4>
+        <div class="count" th:text="${orders.size()}">0</div>
+        <a th:href="@{/admin/orders}" class="btn-view">Vezi toate comenzile</a>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

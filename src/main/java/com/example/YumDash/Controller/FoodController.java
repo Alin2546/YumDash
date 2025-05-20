@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -37,20 +38,16 @@ public class FoodController {
         List<FoodProduct> products;
         FoodProvider provider = foodProviderService.findById(providerId);
         if (category != null) {
-            products = foodProductService.getProductsByProviderIdAndCategory(providerId, category);
+            products = foodProductService.getAvailableProductsByProviderIdAndCategory(providerId, category);
         } else {
-            products = foodProductService.getProductsByProviderId(providerId);
+            products = foodProductService.getAvailableProductsByProviderId(providerId);
         }
-
         model.addAttribute("foodProvider", provider);
         model.addAttribute("products", products);
         model.addAttribute("categories", Category.values());
         model.addAttribute("selectedCategory", category);
-
         return "restaurantDetails";
     }
-
-
 
     @GetMapping("/search")
     public String search(@RequestParam String keyword,
@@ -60,7 +57,6 @@ public class FoodController {
         String address = (String) session.getAttribute("savedAddress");
         model.addAttribute("address", address);
         model.addAttribute("keyword", keyword);
-
 
         List<FoodProvider> allMatchingProviders = foodProviderService.searchFoodProviders(keyword);
 
@@ -77,19 +73,12 @@ public class FoodController {
                 }
             }
         } else {
-
             availableProviders = allMatchingProviders;
         }
-
-
         model.addAttribute("availableProviders", availableProviders);
         model.addAttribute("unavailableProviders", unavailableProviders);
-
         return "searchResults";
     }
-
-
-
 }
 
 

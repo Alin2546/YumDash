@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface FoodProductRepo extends JpaRepository<FoodProduct,Integer> {
-    List<FoodProduct> findByFoodProviderId(int foodProviderId);
-    List<FoodProduct> findByFoodProviderIdAndCategory(int providerId, Category category);
-    void deleteAllByFoodProvider(FoodProvider foodProvider);
+    List<FoodProduct> findByFoodProvider(FoodProvider provider);
+    List<FoodProduct> findByFoodProviderIdAndAvailable(int foodProviderId, boolean available);
+    List<FoodProduct> findByFoodProviderIdAndCategoryAndAvailable(int foodProviderId, Category category, boolean available);
 }

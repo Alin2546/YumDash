@@ -48,31 +48,46 @@
         Edit Product
     </div>
     <div class="card-body">
-        <form th:action="@{/editProduct/{id}(id=${product.id})}" method="post">
+        <form th:action="@{/editProduct/{id}(id=${productId})}"
+              th:object="${product}" method="post">
+
             <div class="mb-3">
-                <label for="name" class="form-label">Product Name:</label>
-                <input type="text" name="name" id="name" th:value="${product.name}" class="form-control" required>
+                <label for="name" class="form-label">Numele produsului:</label>
+                <input type="text" th:field="*{name}" id="name" class="form-control" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
             </div>
 
             <div class="mb-3">
-                <label for="price" class="form-label">Price:</label>
-                <input type="number" name="price" id="price" th:value="${product.price}" class="form-control" required>
+                <label for="price" class="form-label">Preț:</label>
+                <input type="number" th:field="*{price}" id="price" step="0.01" min="0.01" class="form-control" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
             </div>
 
             <div class="mb-3">
-                <label for="imageurl" class="form-label">Image URL:</label>
-                <input type="text" name="imageurl" id="imageurl" th:value="${product.imageurl}" class="form-control" required oninput="updateImagePreview()">
+                <label for="category" class="form-label">Categorie:</label>
+                <select th:field="*{category}" id="category" class="form-select" required>
+                    <option th:each="cat : ${T(com.example.YumDash.Model.Category).values()}"
+                            th:value="${cat}" th:text="${cat}">Category</option>
+                </select>
+                <div class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="imageurl" class="form-label">URL imagine:</label>
+                <input type="text" th:field="*{imageurl}" id="imageurl" class="form-control" required oninput="updateImagePreview()">
+                <div class="text-danger" th:if="${#fields.hasErrors('imageurl')}" th:errors="*{imageurl}"></div>
             </div>
 
             <div class="mb-3">
                 <label>Image Preview:</label>
-                <img th:src="@{${product.imageurl}}" id="imagePreview" alt="Image Preview" class="preview-image w-100"/>
+                <img th:src="*{imageurl}" id="imagePreview" alt="Image Preview" class="preview-image w-100"/>
             </div>
 
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">Save Changes</button>
             </div>
         </form>
+
     </div>
 </div>
 

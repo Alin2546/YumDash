@@ -1,23 +1,28 @@
 package com.example.YumDash.Controller;
 
 import com.example.YumDash.Model.Dto.CheckoutDto;
+import com.example.YumDash.Model.Dto.ProductQuantityDto;
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.OrderItem;
 import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
 import com.example.YumDash.Repository.FoodProductRepo;
+import com.example.YumDash.Repository.OrderItemRepository;
 import com.example.YumDash.Service.FoodService.CartService;
 import com.example.YumDash.Service.FoodService.FoodProductService;
+
 import com.example.YumDash.Service.OrderService;
 import com.example.YumDash.Service.UserService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,10 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -43,26 +45,20 @@ public class PaymentController {
     private final UserService userService;
     private final OrderService orderService;
     private final FoodProductService foodProductService;
+    private final OrderItemRepository orderItemRepository;
 
-    @GetMapping("/checkout")
-    public String checkoutPage(Model model, HttpSession session) throws StripeException {
-        Map<Integer, Integer> cart = cartService.getCartFromSession(session);
-        Map<Integer, FoodProduct> foodProductMap = new HashMap<>();
-
-        for (Integer productId : cart.keySet()) {
-            foodProductMap.put(productId, foodProductRepo.findById(productId).orElse(null));
-        }
-        model.addAttribute("checkoutDTO", new CheckoutDto());
-
-        return "payment";
-    }
 
     @PostMapping("/checkout")
     public String processCheckout(
-            @ModelAttribute CheckoutDto checkoutDTO,
-            Principal principal,
+            @Valid @ModelAttribute CheckoutDto checkoutDto,
+            BindingResult bindingResult,
+            Principal principal, Model model,
             HttpSession session) {
 
+        if (bindingResult.hasErrors()) {
+            cartService.populateCartViewModel(model, session, checkoutDto);
+            return "cartView";
+        }
 
         User user;
         if (principal instanceof OAuth2AuthenticationToken oauthToken) {
@@ -80,17 +76,14 @@ public class PaymentController {
             userService.createUser(user);
         }
 
-
-        String fullAddress = checkoutDTO.getAddress() + ", Block: " + checkoutDTO.getBlock() +
-                ", Staircase: " + checkoutDTO.getStaircase() + ", Apartment: " + checkoutDTO.getApartment();
-
+        String fullAddress = checkoutDto.getDeliveryAddress() + ", Block: " + checkoutDto.getBlock() +
+                ", Staircase: " + checkoutDto.getStaircase() + ", Apartment: " + checkoutDto.getApartment();
 
         @SuppressWarnings("unchecked")
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
         if (cart == null) {
             cart = new HashMap<>();
         }
-
 
         Map<Integer, FoodProduct> foodProductMap = foodProductService.getAllFoodProducts();
         double subtotal = cartService.calculateTotal(session, foodProductMap);
@@ -100,35 +93,7 @@ public class PaymentController {
         double serviceFee = 1.20;
         double totalAmount = subtotal + deliveryFee + packagingFee + serviceFee;
 
-
-        UserOrder order = new UserOrder();
-        order.setUser(user);
-        order.setOrderDate(LocalDateTime.now().toString());
-        order.setAddress(fullAddress);
-        order.setPaymentMethod(checkoutDTO.getPaymentMethod());
-        order.setDeliveryMethod(checkoutDTO.getDeliveryMethod());
-        order.setComment(checkoutDTO.getComment());
-        order.setStatus(checkoutDTO.getStatus());
-        order.setAmount(totalAmount);
-
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (Integer productId : cart.keySet()) {
-            FoodProduct foodProduct = foodProductRepo.findById(productId)
-                    .orElseThrow(() -> new RuntimeException("Produsul nu a fost găsit"));
-
-            int quantity = cart.get(productId);
-
-            OrderItem item = new OrderItem();
-            item.setFoodProduct(foodProduct);
-            item.setQuantity(quantity);
-            item.setOrder(order);
-
-            orderItems.add(item);
-        }
-
-        order.setItems(orderItems);
-
+        UserOrder order = checkoutDto.mapToUserOrder(user, totalAmount);
 
         FoodProduct firstProduct = null;
         for (Integer productId : cart.keySet()) {
@@ -140,13 +105,21 @@ public class PaymentController {
             order.setFoodProvider(firstProduct.getFoodProvider());
         }
 
-
         session.setAttribute("order", order);
+        orderService.createOrder(order);
+        for (ProductQuantityDto pq : checkoutDto.getProducts()) {
+            FoodProduct product = foodProductRepo.findById(pq.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Produsul cu ID " + pq.getProductId() + " nu a fost găsit"));
 
-
-        String paymentMethod = checkoutDTO.getPaymentMethod();
+            OrderItem item = new OrderItem();
+            item.setOrder(order);
+            item.setProduct(product);
+            item.setQuantity(pq.getQuantity());
+            orderItemRepository.save(item);
+            order.getOrderItems().add(item);
+        }
+        String paymentMethod = checkoutDto.getPaymentMethod();
         if ("Cash".equalsIgnoreCase(paymentMethod) || "Card on Delivery".equalsIgnoreCase(paymentMethod)) {
-            orderService.createOrder(order);
             return "redirect:/payment/success";
         } else if ("online".equalsIgnoreCase(paymentMethod)) {
             return "redirect:/online";
@@ -154,8 +127,6 @@ public class PaymentController {
             return "redirect:/checkout?error=metoda_necunoscuta";
         }
     }
-
-
 
     @GetMapping("/payment/cancel")
     public String paymentCancel() {
@@ -174,7 +145,6 @@ public class PaymentController {
         return "paymentSuccess";
     }
 
-
     @GetMapping("/online")
     public String showOnlinePaymentPage(HttpSession session, Model model) {
         UserOrder order = (UserOrder) session.getAttribute("order");
@@ -188,7 +158,6 @@ public class PaymentController {
                 .setAmount((long) (order.getAmount() * 100))
                 .setCurrency("ron")
                 .build();
-
         try {
             PaymentIntent paymentIntent = PaymentIntent.create(params);
             model.addAttribute("clientSecret", paymentIntent.getClientSecret());
@@ -197,7 +166,6 @@ public class PaymentController {
             e.printStackTrace();
             return "redirect:/payment/cancel";
         }
-
         return "payment";
     }
 
@@ -206,24 +174,16 @@ public class PaymentController {
             @RequestParam String paymentIntentId,
             HttpSession session, Model model) {
 
-
         UserOrder order = (UserOrder) session.getAttribute("order");
         if (order == null) {
             return "redirect:/payment/cancel";
         }
-
-
         com.stripe.Stripe.apiKey = stripeSecretKey;
-
         try {
-
             PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
 
-
             if ("succeeded".equals(paymentIntent.getStatus())) {
-
                 order.setStatus("Comanda trimisa");
-
                 @SuppressWarnings("unchecked")
                 Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
 
@@ -235,15 +195,12 @@ public class PaymentController {
                 if (firstProduct != null) {
                     order.setFoodProvider(firstProduct.getFoodProvider());
                 }
-
                 orderService.createOrder(order);
-
                 model.addAttribute("order", order);
                 session.removeAttribute("order");
                 session.removeAttribute("cart");
                 return "paymentSuccess";
             } else {
-
                 return "redirect:/payment/cancel";
             }
         } catch (StripeException e) {
@@ -251,5 +208,4 @@ public class PaymentController {
             return "redirect:/payment/cancel";
         }
     }
-
 }

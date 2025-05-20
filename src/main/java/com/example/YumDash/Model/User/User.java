@@ -1,10 +1,11 @@
 package com.example.YumDash.Model.User;
 
-import com.example.YumDash.Model.Food.FoodProvider;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -20,15 +21,20 @@ public class User {
     private String email;
     private String password;
     private String role;
-    private String provider;
     private String address;
+    private boolean isActive;
+    private String verificationCode;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserOrder> userOrders;
 
-    @OneToOne
-    @JoinColumn(name = "food_provider_id")
-    private FoodProvider foodProvider;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> authProviders = new HashSet<>();
 }
+
+
+
+
+

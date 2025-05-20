@@ -15,17 +15,18 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow-y: auto;  /* Make the page scrollable */
+            overflow-y: auto;
         }
 
         .register-container {
-            max-width: 400px;
+            max-width: 420px;
             margin: 0 auto;
             padding: 30px;
             background: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
+
         }
 
         .oauth-buttons {
@@ -107,6 +108,7 @@
                     <span th:errors="*{name}"></span>
                 </div>
             </div>
+
             <div class="mb-3">
                 <label for="email" class="form-label">Adresa email</label>
                 <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="Introdu email" required>
@@ -114,30 +116,33 @@
                     <span th:errors="*{email}"></span>
                 </div>
             </div>
+
+
             <div class="mb-3 password-wrapper">
                 <label for="password" class="form-label">Parola</label>
                 <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Parola" required minlength="8" maxlength="50">
                 <span class="eye-icon" onclick="togglePassword('password', 'eyeIcon1')">
-    <i id="eyeIcon1" class="fas fa-eye-slash"></i>
-</span>
-
+            <i id="eyeIcon1" class="fas fa-eye-slash"></i>
+        </span>
                 <div th:if="${#fields.hasErrors('password')}" class="text-danger">
                     <span th:errors="*{password}"></span>
                 </div>
             </div>
+
             <div class="mb-3 password-wrapper">
                 <label for="confirm-password" class="form-label">Confirma parola</label>
-                <input type="password" class="form-control" id="confirm-password" th:field="*{verifypassword}" placeholder="Confirma parola" required minlength="8" maxlength="50">
+                <input type="password" class="form-control" id="confirm-password" th:field="*{verifyPassword}" placeholder="Confirma parola" required minlength="8" maxlength="50">
                 <span class="eye-icon" onclick="togglePassword('confirm-password', 'eyeIcon2')">
-    <i id="eyeIcon2" class="fas fa-eye-slash"></i>
-</span>
-
-                <div th:if="${#fields.hasErrors('verifypassword')}" class="text-danger">
-                    <span th:errors="*{verifypassword}"></span>
+            <i id="eyeIcon2" class="fas fa-eye-slash"></i>
+        </span>
+                <div th:if="${#fields.hasErrors('verifyPassword')}" class="text-danger">
+                    <span th:errors="*{verifyPassword}"></span>
                 </div>
             </div>
+
             <button type="submit" class="btn btn-primary w-100">Inregistrare</button>
         </form>
+
 
         <p class="text-center mt-3">Ai deja cont? <a href="/loginForm">Conecteaza-te</a></p>
         <p class="text-center mt-3">Sau continua cu:</p>

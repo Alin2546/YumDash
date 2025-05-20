@@ -1,15 +1,18 @@
 package com.example.YumDash.Controller;
 
+import com.example.YumDash.Model.Dto.OrderItemDto;
 import com.example.YumDash.Model.Dto.ResetPasswordDto;
 import com.example.YumDash.Model.Dto.UserCreateDto;
+import com.example.YumDash.Model.Dto.UserOrderViewDto;
+import com.example.YumDash.Model.Food.FoodProvider;
+import com.example.YumDash.Model.Food.OrderItem;
 import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
-import com.example.YumDash.Repository.UserRepo;
 import com.example.YumDash.Service.EmailService;
 import com.example.YumDash.Service.SecurityService.MyUser;
 import com.example.YumDash.Service.OrderService;
 import com.example.YumDash.Service.UserService;
-import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -24,8 +27,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,8 +38,6 @@ public class UserController {
     private final OrderService orderService;
     private final EmailService emailService;
 
-
-
     @GetMapping("/register/form")
     public String displayUserForm(Model model) {
         model.addAttribute("userCreateDto", new UserCreateDto());
@@ -43,19 +45,60 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute @Valid UserCreateDto userCreateDto, BindingResult bindingResult, Model model) {
+    public String registerUser(@ModelAttribute @Valid UserCreateDto userCreateDto,
+                               BindingResult bindingResult,
+                               Model model) {
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("userCreateDto", userCreateDto);
             return "createUser";
-        } else if (userService.findByEmail(userCreateDto.getEmail()).isPresent()) {
+        }
+        if (userService.findByEmail(userCreateDto.getEmail()).isPresent()) {
             bindingResult.rejectValue("email", "error.email", "Emailul tau a fost deja inregistrat!");
             return "createUser";
-        } else if (!(userCreateDto.getPassword().equals(userCreateDto.getVerifypassword()))) {
-            bindingResult.rejectValue("verifypassword", "error.verifypassword", "Parolele nu se potrivesc!");
+        }
+        if (!userCreateDto.getPassword().equals(userCreateDto.getVerifyPassword())) {
+            bindingResult.rejectValue("verifyPassword", "error.verifyPassword", "Parolele nu se potrivesc!");
             return "createUser";
         }
-        userService.createUser(userCreateDto.mapToUser());
-        return "redirect:/loginForm";
+
+        String verificationCode = userService.generateVerificationCode();
+
+        userCreateDto.setVerificationCode(verificationCode);
+        User user = userCreateDto.mapToUser();
+
+        userService.createUser(user);
+
+        emailService.sendVerificationEmail(user.getEmail(), verificationCode);
+        model.addAttribute("email", user.getEmail());
+        return "verifyEmail";
+    }
+
+    @PostMapping("/verifyCode")
+    public String verifyCode(@RequestParam String email,
+                             @RequestParam String verificationCode,
+                             Model model) {
+
+        Optional<User> optionalUser = userService.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            model.addAttribute("error", "Email invalid.");
+            return "verifyEmail";
+        }
+
+        User user = optionalUser.get();
+
+        if (user.getVerificationCode() != null && user.getVerificationCode().equals(verificationCode)) {
+            user.setActive(true);
+            user.setVerificationCode(null);
+            userService.updateUser(user);
+
+            return "verifyCodeSuccess";
+        } else {
+            model.addAttribute("email", email);
+            model.addAttribute("error", "Codul introdus nu este valid!");
+            return "verifyEmail";
+        }
     }
 
     @GetMapping("/loginForm")
@@ -91,7 +134,6 @@ public class UserController {
         return "userProfile";
     }
 
-
     @GetMapping("/orders")
     public String getUserOrders(Model model, Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -102,9 +144,35 @@ public class UserController {
         } else {
             email = authentication.getName();
         }
+
         User user = userService.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
         List<UserOrder> userOrders = orderService.findOrdersByUser(user);
-        model.addAttribute("userOrders", userOrders);
+
+        List<UserOrderViewDto> orderDtos = userOrders.stream()
+                .map(order -> {
+                    FoodProvider provider = order.getFoodProvider();
+                    List<OrderItemDto> items = order.getOrderItems().stream()
+                            .map(item -> new OrderItemDto(item.getProduct().getName(), item.getQuantity()))
+                            .collect(Collectors.toList());
+
+                    return new UserOrderViewDto(
+                            order.getId(),
+                            provider.getName(),
+                            provider.getImageurl(),
+                            order.getOrderDate(),
+                            order.getAmount(),
+                            order.getStatus(),
+                            order.getUser() != null ? order.getUser().getEmail() : null,
+                            order.getFoodProvider().getName(),
+                            order.getAddress(),
+                            order.getPaymentMethod(),
+                            order.getDeliveryMethod(),
+                            order.getComment(),
+                            items
+                    );
+                })
+                .collect(Collectors.toList());
+        model.addAttribute("userOrders", orderDtos);
         return "userOrders";
     }
 
@@ -115,46 +183,79 @@ public class UserController {
         return "resetPassword";
     }
 
+    @PostMapping("/orders/reorder")
+    public String reorder(@RequestParam("orderId") int orderId,
+                          Authentication authentication,
+                          HttpSession session) {
+
+        UserOrder originalOrder = orderService.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Comanda nu a fost găsită."));
+
+        String email = authentication.getPrincipal() instanceof OAuth2User
+                ? (String) ((OAuth2User) authentication.getPrincipal()).getAttributes().get("email")
+                : authentication.getName();
+
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost găsit."));
+
+        UserOrder draftOrder = new UserOrder();
+        draftOrder.setUser(user);
+        draftOrder.setFoodProvider(originalOrder.getFoodProvider());
+        draftOrder.setOrderDate(LocalDateTime.now());
+        draftOrder.setAmount(originalOrder.getAmount());
+        draftOrder.setStatus("Plasată");
+        draftOrder.setAddress(originalOrder.getAddress());
+        draftOrder.setPaymentMethod(originalOrder.getPaymentMethod());
+        draftOrder.setDeliveryMethod(originalOrder.getDeliveryMethod());
+        draftOrder.setComment(originalOrder.getComment());
+        draftOrder.setPhoneNumber(originalOrder.getPhoneNumber());
+
+        List<OrderItem> newItems = new ArrayList<>();
+        Map<Integer, Integer> cart = new HashMap<>();
+
+        for (OrderItem item : originalOrder.getOrderItems()) {
+            OrderItem newItem = new OrderItem();
+            newItem.setProduct(item.getProduct());
+            newItem.setQuantity(item.getQuantity());
+            newItem.setOrder(draftOrder);
+            newItems.add(newItem);
+
+            cart.put(item.getProduct().getId(), item.getQuantity());
+        }
+        draftOrder.setOrderItems(newItems);
+
+        session.setAttribute("draftOrder", draftOrder);
+        session.setAttribute("cart", cart);
+
+        return "redirect:/cart/view";
+    }
+
+
+
+
     @PostMapping("/resetPassword")
-    public String resetPassword(@Valid @ModelAttribute ResetPasswordDto resetPasswordDto, BindingResult result, @RequestParam("email") String email,Model model) {
+    public String resetPassword(@Valid @ModelAttribute ResetPasswordDto resetPasswordDto,
+                                BindingResult result,
+                                @RequestParam("email") String email,
+                                Model model) {
 
         if (result.hasErrors()) {
             model.addAttribute("resetPasswordDto", resetPasswordDto);
             return "resetPassword";
         }
-
         if (!resetPasswordDto.getNewPassword().equals(resetPasswordDto.getConfirmPassword())) {
             result.rejectValue("confirmPassword", "error.resetPasswordDto", "Parola și confirmarea parolei nu se potrivesc.");
             return "resetPassword";
         }
-
         try {
             userService.resetPassword(email, resetPasswordDto.getNewPassword());
-            String subject = "Parola a fost schimbată";
-            String htmlMessage = "<html>" +
-                    "<body style='font-family: Arial, sans-serif;'>" +
-                    "<h2 style='color: #2d7dd2;'>Confirmare schimbare parolă</h2>" +
-                    "<p>Bună,</p>" +
-                    "<p>Parola contului tău a fost schimbată cu succes.</p>" +
-                    "<p>Dacă <b>nu tu</b> ai făcut această schimbare, te rugăm să ne contactezi imediat. eternalsq1337@gmail.com sau 0751777343</p>" +
-                    "<a href='http://localhost:8080/loginForm' " +
-                    "style='display: inline-block; padding: 10px 20px; background-color: #2d7dd2; color: white; text-decoration: none; border-radius: 5px;'>Autentifică-te</a>" +
-                    "<br><br>" +
-                    "<img src='https://i.postimg.cc/xT6FcJG6/Yum-Dash-Logo.jpg' alt='Logo aplicație' width='150'/>" +
-                    "</body>" +
-                    "</html>";
-
-            emailService.sendHtmlEmail(email, subject, htmlMessage);
+            emailService.sendPasswordChangedConfirmationEmail(email);
         } catch (RuntimeException e) {
             result.rejectValue("email", "error.resetPasswordDto", e.getMessage());
             return "resetPassword";
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
         }
-
         return "redirect:/passwordChangedSuccess";
     }
-
 
     @GetMapping("/forgotPassword")
     public String showForgotPasswordPage() {
@@ -168,25 +269,11 @@ public class UserController {
             model.addAttribute("error", "Utilizatorul cu acest email nu a fost găsit.");
             return "forgotPassword";
         }
-        String subject = "Resetare parolă";
+
         String resetLink = "http://localhost:8080/resetPasswordForm?email=" + email;
 
-
-        String htmlMessage = "<html>" +
-                "<body style='font-family: Arial, sans-serif;'>" +
-                "<h2 style='color: #2d7dd2;'>Resetare parolă</h2>" +
-                "<p>Bună,</p>" +
-                "<p>Ai solicitat o resetare a parolei. Apasă pe butonul de mai jos pentru a continua:</p>" +
-                "<a href='" + resetLink + "' " +
-                "style='display: inline-block; padding: 10px 20px; background-color: #2d7dd2; color: white; text-decoration: none; border-radius: 5px;'>Resetează parola</a>" +
-                "<p style='margin-top:20px;'>Dacă nu ai solicitat această acțiune, poți ignora acest mesaj.</p>" +
-                "<br><img src='https://i.postimg.cc/xT6FcJG6/Yum-Dash-Logo.jpg' alt='Logo aplicație' width='150'/>" +
-                "</body>" +
-                "</html>";
-
         try {
-
-            emailService.sendHtmlEmail(email, subject, htmlMessage);
+            emailService.sendResetPasswordEmail(email, resetLink);
             model.addAttribute("email", email);
             return "emailSentView";
         } catch (Exception e) {

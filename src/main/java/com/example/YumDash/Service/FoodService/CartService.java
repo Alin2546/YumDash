@@ -1,11 +1,14 @@
 package com.example.YumDash.Service.FoodService;
 
+import com.example.YumDash.Model.Dto.CheckoutDto;
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
+import com.example.YumDash.Model.User.UserOrder;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,27 +21,14 @@ public class CartService {
 
 
     private final FoodProviderService foodProviderService;
-
-    public void addToCart(HttpSession session, FoodProduct foodProduct) {
-        Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
-        if (cart == null) {
-            cart = new HashMap<>();
-            session.setAttribute("cart", cart);
-        }
-
-
-        Integer foodProductId = foodProduct.getId();
-        cart.put(foodProductId, cart.getOrDefault(foodProductId, 0) + 1);
-    }
+    private final FoodProductService foodProductService;
 
     public String getRestaurantNameFromCart(Map<Integer, Integer> cart) {
         if (cart == null || cart.isEmpty()) {
             return null;
         }
 
-
         Integer firstProductId = cart.keySet().iterator().next();
-
 
         FoodProvider foodProvider = foodProviderService.getFoodProviderByProductId(firstProductId);
 
@@ -54,19 +44,6 @@ public class CartService {
         return cart;
     }
 
-
-    public void removeFromCart(HttpSession session, Integer foodProductId) {
-        Map<Integer, Integer> cart = getCartFromSession(session);
-        cart.remove(foodProductId);
-    }
-
-
-    public void clearCart(HttpSession session) {
-        Map<Integer, Integer> cart = getCartFromSession(session);
-        cart.clear();
-    }
-
-
     public double calculateTotal(HttpSession session, Map<Integer, FoodProduct> foodProductMap) {
         Map<Integer, Integer> cart = getCartFromSession(session);
         return cart.entrySet().stream()
@@ -74,10 +51,68 @@ public class CartService {
                 .sum();
     }
 
+    public void populateCartViewModel(Model model, HttpSession session, CheckoutDto checkoutDto) {
+        @SuppressWarnings("unchecked")
+        Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
+        if (cart == null) cart = new HashMap<>();
 
-    public int getQuantity(HttpSession session, Integer foodProductId) {
-        Map<Integer, Integer> cart = getCartFromSession(session);
-        return cart.getOrDefault(foodProductId, 0);
+        Map<Integer, FoodProduct> foodProductMap = foodProductService.getAllFoodProducts();
+
+        double subtotal = calculateTotal(session, foodProductMap);
+        double deliveryFee = subtotal >= 100.0 ? 0.0 : 9.99;
+        double packagingFee = 2.50;
+        double serviceFee = 1.20;
+        double total = subtotal + deliveryFee + packagingFee + serviceFee;
+
+        String userAddress = (String) session.getAttribute("savedAddress");
+        Double savedLatitude = (Double) session.getAttribute("latitude");
+        Double savedLongitude = (Double) session.getAttribute("longitude");
+
+        if (userAddress == null) userAddress = "";
+        if (savedLatitude == null) savedLatitude = 47.1585;
+        if (savedLongitude == null) savedLongitude = 27.5867;
+
+        Integer selectedRestaurantId = (Integer) session.getAttribute("selectedRestaurantId");
+
+        model.addAttribute("deliveryAddress", userAddress);
+        model.addAttribute("latitude", savedLatitude);
+        model.addAttribute("longitude", savedLongitude);
+        model.addAttribute("cart", cart);
+        model.addAttribute("foodProductMap", foodProductMap);
+        model.addAttribute("subtotal", subtotal);
+        model.addAttribute("deliveryFee", deliveryFee);
+        model.addAttribute("packagingFee", packagingFee);
+        model.addAttribute("serviceFee", serviceFee);
+        model.addAttribute("total", total);
+        model.addAttribute("selectedRestaurantId", selectedRestaurantId);
+
+        if (selectedRestaurantId != null) {
+            FoodProvider selectedRestaurant = foodProviderService.getFoodProviderById(selectedRestaurantId);
+            if (selectedRestaurant != null) {
+                model.addAttribute("restaurantName", selectedRestaurant.getName());
+                model.addAttribute("restaurantImage", selectedRestaurant.getImageurl());
+            }
+        }
+
+        if (checkoutDto == null) {
+            checkoutDto = new CheckoutDto();
+            checkoutDto.setDeliveryAddress(userAddress);
+        }
+
+        model.addAttribute("checkoutDto", checkoutDto);
     }
+
+    public CheckoutDto convertOrderToCheckoutDto(UserOrder order) {
+        CheckoutDto dto = new CheckoutDto();
+        dto.setDeliveryAddress(order.getAddress());
+        dto.setPaymentMethod(order.getPaymentMethod());
+        dto.setDeliveryMethod(order.getDeliveryMethod());
+        dto.setComment(order.getComment());
+        dto.setPhoneNumber(order.getPhoneNumber());
+        return dto;
+    }
+
+
+
 
 }

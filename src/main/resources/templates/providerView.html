@@ -75,12 +75,17 @@
         <form th:action="@{/updateRestaurantImage}" method="post" id="imageUpdateForm" style="display: none;">
             <div class="form-group mb-3">
                 <input type="text" name="newImageUrl" id="newImageUrl" class="form-control"
-                       placeholder="Introduceți noul URL al imaginii" required>
+                       placeholder="Introduceți noul URL al imaginii" required oninput="previewRestaurantImage()">
+            </div>
+            <div class="form-group mb-3">
+                <label for="restaurantImagePreview">Previzualizare Imagine Nouă:</label><br>
+                <img id="restaurantImagePreview" src="" alt="Previzualizare imagine restaurant" class="preview-image" style="display: none;" />
             </div>
             <div class="text-end">
                 <button type="submit" class="btn btn-sm btn-warning">Salvează</button>
             </div>
         </form>
+
 
         <h4 class="mt-4">Gestionați Produsele</h4>
 
@@ -89,33 +94,44 @@
             <div class="form-group mb-3">
                 <label for="productName">Numele Produsului:</label>
                 <input type="text" th:field="*{name}" id="productName" class="form-control" placeholder="Introduceți numele produsului" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
             </div>
 
             <div class="form-group mb-3">
                 <label for="productPrice">Preț:</label>
-                <input type="number" th:field="*{price}" id="productPrice" class="form-control" placeholder="Introduceți prețul" required>
+                <div class="input-group">
+                    <input type="number" step="0.01" min="0" th:field="*{price}" id="productPrice" class="form-control" placeholder="Introduceți prețul" required>
+                    <span class="input-group-text">RON</span>
+                </div>
+                <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
             </div>
 
             <div class="form-group mb-3">
                 <label for="productImageUrl">URL Imagine Produs:</label>
-                <input type="text" th:field="*{imageurl}" id="productImageUrl" class="form-control" placeholder="Introduceți URL-ul imaginii" required oninput="updatePreview()">
+                <input type="text" th:field="*{imageurl}" id="productImageUrl"
+                       class="form-control" placeholder="Introduceți URL-ul imaginii"
+                       required oninput="updatePreview()">
+                <div class="text-danger" th:if="${#fields.hasErrors('imageurl')}" th:errors="*{imageurl}"></div>
             </div>
+
 
             <div class="form-group mb-3">
                 <label for="productCategory">Categorie:</label>
-                <select th:field="*{category}" id="productCategory" class="form-control" required>
+                <select th:field="*{category}" id="productCategory" class="form-control">
                     <option value="" disabled selected>Selectați o categorie</option>
                     <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
                 </select>
+                <div class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
             </div>
 
             <div class="form-group mb-3">
                 <label for="imagePreview">Previzualizare Imagine:</label><br>
-                <img id="imagePreview" src="" alt="Previzualizare" class="preview-image" style="display:none;" />
+                <img id="imagePreview" src="" alt="Previzualizare" class="preview-image" style="max-width: 200px; display:none;" />
             </div>
 
             <button type="submit" class="btn btn-warning">Adăugați Produs</button>
         </form>
+
 
         <hr>
 
@@ -133,12 +149,19 @@
             <tbody>
             <tr th:each="product : ${foodProvider.foodProducts}">
                 <td th:text="${product.name}"></td>
-                <td th:text="${product.price}"></td>
+                <td th:text="${product.price + ' RON'}"></td>
                 <td th:text="${product.category}"></td>
                 <td>
                     <img th:src="@{${product.imageurl}}" class="preview-image" alt="Imagine Produs"/>
                 </td>
                 <td>
+                    <form th:action="@{/product/{id}/toggleAvailability(id=${product.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm"
+                                th:classappend="${product.available} ? 'btn-success' : 'btn-secondary'">
+                            <i class="fas" th:classappend="${product.available} ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                            <span th:text="${product.available} ? 'Disponibil' : 'Indisponibil'"></span>
+                        </button>
+                    </form>
                     <form th:action="@{/deleteProduct/{id}(id=${product.id})}" method="post" style="display:inline;">
                         <input type="hidden" name="productId" th:value="${product.id}" />
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Sunteți sigur că doriți să ștergeți acest produs?')">
@@ -161,6 +184,9 @@
     <thead>
     <tr>
         <th>ID</th>
+        <th>Data Comenzii</th>
+        <th>Email Client</th>
+        <th>Telefon Client</th>
         <th>Produse</th>
         <th>Adresă Livrare</th>
         <th>Metodă Plată</th>
@@ -171,13 +197,14 @@
     <tbody>
     <tr th:each="order : ${orders}">
         <td th:text="${order.id}"></td>
+        <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${order.user.email}"></td>
+        <td th:text="${order.phoneNumber}"></td>
         <td>
-            <ul class="mb-0">
-                <li th:each="item : ${order.items}">
-                    <span th:if="${item.foodProduct != null}" th:text="${item.foodProduct.name} + ' x' + ${item.quantity}"></span>
-                    <span th:unless="${item.foodProduct != null}">Produs Inexistent</span>
-                </li>
-            </ul>
+            <li th:each="item : ${order.orderItems}">
+                <span th:text="${item.product.name}">Nume produs</span> -
+                <span th:text="${item.quantity}">Cantitate</span>
+            </li>
         </td>
         <td th:text="${order.address}"></td>
         <td th:text="${order.paymentMethod}"></td>
@@ -200,24 +227,39 @@
     </tbody>
 </table>
 
+
 <script>
     function updatePreview() {
-        var imageUrl = document.getElementById("productImageUrl").value;
-        var imagePreview = document.getElementById("imagePreview");
+        const input = document.getElementById("productImageUrl");
+        const preview = document.getElementById("imagePreview");
 
-        if (imageUrl) {
-            imagePreview.style.display = "block";
-            imagePreview.src = imageUrl;
+        if (input.value.trim() !== "") {
+            preview.src = input.value;
+            preview.style.display = "block";
         } else {
-            imagePreview.style.display = "none";
+            preview.src = "";
+            preview.style.display = "none";
         }
     }
-
     function toggleImageForm(e) {
         e.preventDefault();
         const form = document.getElementById("imageUpdateForm");
         form.style.display = form.style.display === "none" ? "block" : "none";
     }
+
+    function previewRestaurantImage() {
+    const input = document.getElementById("newImageUrl");
+    const preview = document.getElementById("restaurantImagePreview");
+
+    if (input.value.trim() !== "") {
+        preview.src = input.value;
+        preview.style.display = "block";
+    } else {
+        preview.src = "";
+        preview.style.display = "none";
+    }
+}
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

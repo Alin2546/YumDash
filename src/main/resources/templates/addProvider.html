@@ -85,28 +85,63 @@
   <div class="card-body">
     <p class="text-center text-muted mb-4">E simplu! Înregistrează-te și adaugă restaurantul sau magazinul tău pe YumDash pentru a atrage clienți noi și venituri suplimentare! 💸</p>
 
-    <form action="/saveProvider" method="post" enctype="multipart/form-data" th:object="${foodProviderDto}">
+    <form action="/saveProvider" method="post" enctype="multipart/form-data" th:object="${createFoodProviderDto}">
       <div class="form-group mb-3">
         <label for="name">Numele Restaurantului:</label>
         <input type="text" th:field="*{name}" id="name" class="form-control" placeholder="Introduceți numele restaurantului" required>
+        <div th:if="${#fields.hasErrors('name')}" class="text-danger">
+          <span th:errors="*{name}"></span>
+        </div>
       </div>
+
       <div class="form-group mb-3 position-relative">
         <label for="address">Adresa Restaurantului:</label>
         <input type="text" th:field="*{address}" id="address" class="form-control" placeholder="Introduceți adresa restaurantului" required autocomplete="off" oninput="fetchSuggestions(this.value)">
+        <div th:if="${#fields.hasErrors('address')}" class="text-danger">
+          <span th:errors="*{address}"></span>
+        </div>
         <div id="addressSuggestions" class="dropdown-menu show w-100" style="max-height: 200px; overflow-y: auto; display: none; position: absolute; z-index: 1000;"></div>
       </div>
+
       <div class="form-group mb-3">
         <label for="email">Email:</label>
         <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="Introduceți emailul" required>
+        <div th:if="${#fields.hasErrors('email')}" class="text-danger">
+          <span th:errors="*{email}"></span>
+        </div>
       </div>
+
+      <div class="form-group mb-3">
+        <label for="phoneNumber">Număr de telefon:</label>
+        <input type="text" th:field="*{phoneNumber}" id="phoneNumber" class="form-control" placeholder="Introduceți numărul de telefon" required>
+        <div th:if="${#fields.hasErrors('phoneNumber')}" class="text-danger">
+          <span th:errors="*{phoneNumber}"></span>
+        </div>
+      </div>
+
       <div class="form-group mb-3 position-relative">
         <label for="password">Parola:</label>
         <input type="password" th:field="*{password}" id="password" class="form-control" placeholder="Introduceți parola" required>
-        <i class="fas fa-eye eye-icon" id="eyeIcon" onclick="togglePassword()"></i> <!-- Iconița ochi -->
+        <div th:if="${#fields.hasErrors('password')}" class="text-danger">
+          <span th:errors="*{password}"></span>
+        </div>
+        <i class="fas fa-eye-slash eye-icon" id="eyeIconPassword" onclick="togglePassword('password', 'eyeIconPassword')"></i>
+      </div>
+
+      <div class="form-group mb-3 position-relative">
+        <label for="confirmPassword">Confirmă parola:</label>
+        <input type="password" th:field="*{confirmPassword}" id="confirmPassword" class="form-control" placeholder="Reintroduceți parola" required>
+        <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger">
+          <span th:errors="*{confirmPassword}"></span>
+        </div>
+        <i class="fas fa-eye-slash eye-icon" id="eyeIconConfirm" onclick="togglePassword('confirmPassword', 'eyeIconConfirm')"></i>
       </div>
       <div class="form-group mb-3">
         <label for="imageurl">URL Imagine Restaurant:</label>
         <input type="text" th:field="*{imageurl}" id="imageurl" class="form-control" placeholder="Introduceți URL-ul imaginii restaurantului" required oninput="previewUrlImage(event)">
+        <div th:if="${#fields.hasErrors('imageurl')}" class="text-danger">
+          <span th:errors="*{imageurl}"></span>
+        </div>
       </div>
 
       <div class="image-preview-container" id="imagePreviewContainer">
@@ -116,6 +151,7 @@
 
       <button type="submit" class="btn btn-warning btn-block mt-3">Salvează</button>
     </form>
+
   </div>
   <div class="card-footer">
     <p class="text-muted">Pentru mai multe informații, contactați-ne pe <a href="mailto:support@yumdash.com">support@yumdash.com</a></p>
@@ -173,22 +209,21 @@
     dropdown.style.display = "none";
   }
 
-  function togglePassword() {
-  const passwordField = document.getElementById("password");
-  const eyeIcon = document.getElementById("eyeIcon");
+ function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
 
-  if (passwordField.type === "password") {
-    (type="password")
-    passwordField.type = "text";
-    eyeIcon.classList.remove("fa-eye-slash");
-    eyeIcon.classList.add("fa-eye");
+  if (input.type === "password") {
+    input.type = "text";
+    icon.classList.remove("fa-eye-slash");
+    icon.classList.add("fa-eye");
   } else {
-    (type="text")
-    passwordField.type = "password";
-    eyeIcon.classList.remove("fa-eye");
-    eyeIcon.classList.add("fa-eye-slash");
+    input.type = "password";
+    icon.classList.remove("fa-eye");
+    icon.classList.add("fa-eye-slash");
   }
 }
+
 
 
   document.addEventListener("click", function (event) {

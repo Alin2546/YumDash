@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "food_product")
 @Getter
@@ -25,10 +28,14 @@ public class FoodProduct {
     @JoinColumn(name = "user_order_id")
     private UserOrder userOrder;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
     private String name;
     private double price;
     private String imageurl;
     private Category category;
+    private boolean available;
 
 }
 

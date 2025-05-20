@@ -25,13 +25,14 @@ public class FoodProvider {
     private String address;
     private double latitude;
     private double longitude;
+    private String phoneNumber;
 
 
     @OneToMany(mappedBy = "foodProvider", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FoodProduct> foodProducts;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

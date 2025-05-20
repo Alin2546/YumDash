@@ -8,11 +8,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 
 
 @Component
@@ -28,21 +31,31 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
         String email = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("name");
 
-        String sessionAddress = (String) request.getSession().getAttribute("savedAddress");
-        User user = userRepository.findByEmail(email).orElseGet(() -> {
+        String registrationId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
+        String currentProvider = capitalize(registrationId);
 
+        String sessionAddress = (String) request.getSession().getAttribute("savedAddress");
+
+        User user = userRepository.findByEmail(email).orElseGet(() -> {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setName(name);
-            newUser.setProvider("google");
+            newUser.setAuthProviders(new HashSet<>(List.of(currentProvider)));
             newUser.setRole("ROLE_USER");
+
             if (sessionAddress != null && !sessionAddress.isBlank()) {
                 newUser.setAddress(sessionAddress);
             }
 
-
             return userRepository.save(newUser);
         });
+
+
+        if (!user.getAuthProviders().contains(currentProvider)) {
+            user.getAuthProviders().add(currentProvider);
+            userRepository.save(user);
+        }
+
 
         if (sessionAddress != null && (user.getAddress() == null || user.getAddress().isBlank())) {
             user.setAddress(sessionAddress);
@@ -52,4 +65,10 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
         request.getSession().setAttribute("address", user.getAddress());
         response.sendRedirect("/getFoodPage");
     }
+
+    private String capitalize(String input) {
+        return input == null || input.isEmpty() ? input : input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    }
+
+
 }

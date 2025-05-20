@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="ro" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Coșul Meu - YumDash</title>
@@ -167,50 +167,93 @@
         </div>
 
         <div class="cart-footer">
-            <form action="/checkout" method="post">
+            <form action="/checkout" method="post" th:object="${checkoutDto}">
                 <div class="form-section">
-                    <div class="form-group">
+                    <div class="form-group position-relative">
                         <label for="deliveryAddress">Adresă de livrare:</label>
-                        <input type="text" id="deliveryAddress" name="deliveryAddress" th:value="${deliveryAddress}" class="form-control"
-                               placeholder="Ex: Strada, Nr., Oraș" />
+                        <input type="text" id="deliveryAddress" th:field="*{deliveryAddress}" class="form-control"
+                               placeholder="Ex: Strada, Nr., Oraș" autocomplete="off" oninput="fetchSuggestionsCart(this.value)" />
+
+
+                        <div id="cartAddressSuggestions" class="dropdown-menu show w-100"
+                             style="max-height: 200px; overflow-y: auto; display: none; position: absolute; z-index: 1000;"></div>
+
+                        <div th:if="${#fields.hasErrors('deliveryAddress')}" class="text-danger">
+                            <span th:errors="*{deliveryAddress}"></span>
+                        </div>
                     </div>
+
+
+
                     <div id="map"></div>
 
+                    <div class="form-group">
+                        <label for="phoneNumber">Număr de telefon:</label>
+                        <input type="text" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="Ex: 07XX.XXX.XXX" />
+                        <div th:if="${#fields.hasErrors('phoneNumber')}" class="text-danger">
+                            <span th:errors="*{phoneNumber}"></span>
+                        </div>
+                    </div>
                     <input type="hidden" id="latitude" name="latitude" th:value="${latitude}" />
                     <input type="hidden" id="longitude" name="longitude" th:value="${longitude}" />
 
+
                     <div class="form-group">
                         <label for="block">Bloc:</label>
-                        <input type="text" id="block" name="block" class="form-control" />
+                        <input type="text" id="block" name="block" th:field="*{block}" class="form-control" />
+                        <div th:if="${#fields.hasErrors('block')}" class="text-danger">
+                            <span th:errors="*{block}"></span>
+                        </div>
                     </div>
+
 
                     <div class="form-group">
                         <label for="staircase">Scară:</label>
-                        <input type="text" id="staircase" name="staircase" class="form-control" />
+                        <input type="text" id="staircase" name="staircase" th:field="*{staircase}" class="form-control" />
+                        <div th:if="${#fields.hasErrors('staircase')}" class="text-danger">
+                            <span th:errors="*{staircase}"></span>
+                        </div>
                     </div>
+
 
                     <div class="form-group">
                         <label for="apartment">Apartament:</label>
-                        <input type="text" id="apartment" name="apartment" class="form-control" />
+                        <input type="text" id="apartment" name="apartment" th:field="*{apartment}" class="form-control" />
+                        <div th:if="${#fields.hasErrors('apartment')}" class="text-danger">
+                            <span th:errors="*{apartment}"></span>
+                        </div>
                     </div>
+
 
                     <div class="form-group" style="flex: 1 1 100%;">
                         <label for="comment">Instrucțiuni pentru curier:</label>
-                        <textarea id="comment" name="comment" class="form-control" rows="3"
-                                  placeholder="Ex: Sună la interfon, lasă la ușă etc."></textarea>
+                        <textarea id="comment" name="comment" th:field="*{comment}" class="form-control" rows="3" placeholder="Ex: Sună la interfon, lasă la ușă etc."></textarea>
+                        <div th:if="${#fields.hasErrors('comment')}" class="text-danger">
+                            <span th:errors="*{comment}"></span>
+                        </div>
                     </div>
 
+
                     <div class="delivery-options">
-                        <label><input type="radio" name="deliveryMethod" value="delivery" required> Livrare</label>
-                        <label><input type="radio" name="deliveryMethod" value="pickup" required> Preluare personală</label>
+                        <label><input type="radio" name="deliveryMethod" th:field="*{deliveryMethod}" value="delivery" required> Livrare</label>
+                        <label><input type="radio" name="deliveryMethod" th:field="*{deliveryMethod}" value="pickup" required> Preluare personală</label>
+                        <div th:if="${#fields.hasErrors('deliveryMethod')}" class="text-danger">
+                            <span th:errors="*{deliveryMethod}"></span>
+                        </div>
                     </div>
+
 
                     <div class="radio-options">
                         <label>Metodă de plată:</label>
-                        <label><input type="radio" id="cash" name="paymentMethod" value="Cash" required> Numerar</label>
-                        <label><input type="radio" id="card" name="paymentMethod" value="Card on Delivery" required> Card la livrare</label>
-                        <label><input type="radio" id="online" name="paymentMethod" value="online" required> Online</label>
+                        <label><input type="radio" name="paymentMethod" th:field="*{paymentMethod}" value="Cash" required> Numerar</label>
+                        <label><input type="radio" name="paymentMethod" th:field="*{paymentMethod}" value="Card on Delivery" required> Card la livrare</label>
+                        <label><input type="radio" name="paymentMethod" th:field="*{paymentMethod}" value="online" required> Online</label>
+                        <div th:if="${#fields.hasErrors('paymentMethod')}" class="text-danger">
+                            <span th:errors="*{paymentMethod}"></span>
+                        </div>
                     </div>
+
+
                     <div class="cart-summary">
                         <p>Subtotal: <span th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">0.00</span> RON</p>
                         <p>Taxă livrare: <span th:text="${#numbers.formatDecimal(deliveryFee, 1, 2)}">0.00</span> RON</p>
@@ -218,13 +261,18 @@
                         <p>Taxă serviciu: <span th:text="${#numbers.formatDecimal(serviceFee, 1, 2)}">0.00</span> RON</p>
                         <h3>Total: <span th:text="${#numbers.formatDecimal(total, 1, 2)}">0.00</span> RON</h3>
                     </div>
+
+                    <div th:each="entry, iterStat : ${cart}">
+                        <input type="hidden" th:name="'products[' + ${iterStat.index} + '].productId'" th:value="${entry.key}" />
+                        <input type="hidden" th:name="'products[' + ${iterStat.index} + '].quantity'" th:value="${entry.value}" />
+                    </div>
                     <div th:if="${deliveryFee == 0.0}" class="free-delivery-message">
                         <strong style="color: green;">🎉 Ai livrare gratuită pentru că ai comandat peste 100 RON!</strong>
                     </div>
-
                     <button type="submit" class="checkout-btn">Finalizează comanda</button>
                 </div>
             </form>
+
 
         </div>
     </div>
@@ -241,6 +289,9 @@
         const latInput = document.getElementById("latitude");
         const lngInput = document.getElementById("longitude");
         const locationInput = document.getElementById("deliveryAddress");
+
+        const savedLat = latInput.value;
+        const savedLng = lngInput.value;
 
         const initialLat = parseFloat(savedLat || 47.1585);
         const initialLng = parseFloat(savedLng || 27.5867);
@@ -267,45 +318,90 @@
             getAddressFromLatLng(position, locationInput);
         });
 
-        function geocodeAddress(address) {
-            geocoder.geocode({ address: address }, function (results, status) {
-                if (status === "OK" && results[0]) {
-                    const location = results[0].geometry.location;
-                    map.setCenter(location);
-                    marker.setPosition(location);
-                    latInput.value = location.lat();
-                    lngInput.value = location.lng();
-                    locationInput.value = results[0].formatted_address;
-                }
-            });
-        }
-
-        function getAddressFromLatLng(position, locationInput) {
-            const latLng = new google.maps.LatLng(position.lat(), position.lng());
-            geocoder.geocode({ location: latLng }, function(results, status) {
-                if (status === "OK" && results[0]) {
-                    locationInput.value = results[0].formatted_address;
-                }
-            });
-        }
-
         if (locationInput.value) {
             geocodeAddress(locationInput.value);
         }
 
         locationInput.addEventListener('blur', function () {
-            const address = locationInput.value;
-            if (address) {
-                geocodeAddress(address);
+            if (locationInput.value) {
+                geocodeAddress(locationInput.value);
             }
         });
     }
 
+    function geocodeAddress(address) {
+        geocoder.geocode({ address: address }, function (results, status) {
+            if (status === "OK" && results[0]) {
+                const location = results[0].geometry.location;
+                map.setCenter(location);
+                marker.setPosition(location);
+                document.getElementById("latitude").value = location.lat();
+                document.getElementById("longitude").value = location.lng();
+                document.getElementById("deliveryAddress").value = results[0].formatted_address;
+            }
+        });
+    }
+
+    function getAddressFromLatLng(position, locationInput) {
+        const latLng = new google.maps.LatLng(position.lat(), position.lng());
+        geocoder.geocode({ location: latLng }, function(results, status) {
+            if (status === "OK" && results[0]) {
+                locationInput.value = results[0].formatted_address;
+            }
+        });
+    }
+
+    function fetchSuggestionsCart(query) {
+        const dropdown = document.getElementById("cartAddressSuggestions");
+        dropdown.innerHTML = "";
+
+        if (!query || query.length < 3) {
+            dropdown.style.display = "none";
+            return;
+        }
+
+        fetch(`/foodOwner/chooseAddress?address=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data || data.length === 0) {
+                    dropdown.style.display = "none";
+                    return;
+                }
+
+                data.forEach(addr => {
+                    const item = document.createElement("div");
+                    item.classList.add("dropdown-item");
+                    item.style.cursor = "pointer";
+                    item.textContent = addr;
+                    item.onclick = () => selectCartAddress(addr);
+                    dropdown.appendChild(item);
+                });
+
+                dropdown.style.display = "block";
+            });
+    }
+
+    function selectCartAddress(selectedAddress) {
+        const input = document.getElementById("deliveryAddress");
+        input.value = selectedAddress;
+        input.dispatchEvent(new Event('input')); // update pentru model
+
+        const dropdown = document.getElementById("cartAddressSuggestions");
+        dropdown.style.display = "none";
+
+        geocodeAddress(selectedAddress); // actualizează harta și coordonatele
+    }
+
+    document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("cartAddressSuggestions");
+        if (!dropdown.contains(event.target) && event.target.id !== "deliveryAddress") {
+            dropdown.style.display = "none";
+        }
+    });
 
     window.addEventListener("load", initMap);
-
-
 </script>
+
 
 </body>
 </html>
