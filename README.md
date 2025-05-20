@@ -29,15 +29,15 @@
 
 ## 📸 Screenshots
 
-#### Landing page
-![Landing page - variantă 1](screenshots/Screenshot 2025-05-20_205712.png)
-![Landing page - variantă 2](screenshots/Screenshot 2025-05-20_205722.png)
-![Landing page - variantă 3](screenshots/Screenshot 2025-05-20_205728.png)
-![Landing page - variantă 4](screenshots/Screenshot 2025-05-20_205745.png)
+### Landing page
+![Landing page - variantă 1](screenshots/Screenshot_2025-05-20_205712.png)  
+![Landing page - variantă 2](screenshots/Screenshot_2025-05-20_205722.png)  
+![Landing page - variantă 3](screenshots/Screenshot_2025-05-20_205728.png)  
+![Landing page - variantă 4](screenshots/Screenshot_2025-05-20_205745.png)
 
-#### Register / Login
-![Register](screenshots/Screenshot 2025-05-20_205828.png)
-![Login](screenshots/Screenshot 2025-05-20_205811.png)
+### Register / Login
+![Register](screenshots/Screenshot_2025-05-20_205828.png)  
+![Login](screenshots/Screenshot_2025-05-20_205811.png)
 
 ---
 
