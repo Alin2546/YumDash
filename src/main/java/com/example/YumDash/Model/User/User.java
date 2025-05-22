@@ -24,7 +24,8 @@ public class User {
     private String address;
     private boolean isActive;
     private String verificationCode;
-
+    private String phoneNumber;
+    private boolean phoneVerified = false;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserOrder> userOrders;

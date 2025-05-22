@@ -1,9 +1,9 @@
 package com.example.YumDash.Service;
 
 
+
 import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
-import com.example.YumDash.Repository.FoodProductRepo;
 import com.example.YumDash.Repository.OrderRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class OrderService {
 
     public void acceptOrder(int id) {
         UserOrder order = orderRepo.findById(id).orElseThrow();
-        order.setStatus("ACCEPTATA");
+        order.setStatus("CONFIRMATA");
         orderRepo.save(order);
     }
 

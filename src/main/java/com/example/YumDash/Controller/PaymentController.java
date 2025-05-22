@@ -56,7 +56,7 @@ public class PaymentController {
             HttpSession session) {
 
         if (bindingResult.hasErrors()) {
-            cartService.populateCartViewModel(model, session, checkoutDto);
+            cartService.populateCartViewModel(model, session, checkoutDto,principal);
             return "cartView";
         }
 
@@ -183,7 +183,7 @@ public class PaymentController {
             PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
 
             if ("succeeded".equals(paymentIntent.getStatus())) {
-                order.setStatus("Comanda trimisa");
+                order.setStatus("TRIMISA");
                 @SuppressWarnings("unchecked")
                 Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
 

@@ -1,7 +1,6 @@
 package com.example.YumDash.Model.Dto;
 
-import com.example.YumDash.Model.Food.FoodProduct;
-import com.example.YumDash.Model.Food.FoodProvider;
+
 import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
 import jakarta.validation.constraints.NotBlank;
@@ -45,7 +44,7 @@ public class CheckoutDto {
     @Size(max = 500, message = "Comentariul nu poate depăși 500 de caractere")
     private String comment;
 
-    private String status = "Comanda Trimisa";
+    private String status = "TRIMISA";
 
     private List<ProductQuantityDto> products = new ArrayList<>();
 

@@ -28,6 +28,7 @@ public class UserService {
     private final FoodProductRepo foodProductRepo;
     private final OrderRepo orderRepo;
 
+
     public void createUser(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -90,4 +91,6 @@ public class UserService {
         user.setActive(isActive);
         usersRepo.save(user);
     }
+
 }
+

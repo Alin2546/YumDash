@@ -213,12 +213,12 @@
         </td>
         <td>
             <form th:action="@{/provider/orders/{id}/accept(id=${order.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-success btn-sm" th:disabled="${order.status != 'Comanda Trimisa'}">
+                <button type="submit" class="btn btn-success btn-sm" th:disabled="${order.status != 'TRIMISA'}">
                     <i class="fas fa-check"></i> Acceptă
                 </button>
             </form>
             <form th:action="@{/provider/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-sm" th:disabled="${order.status != 'Comanda Trimisa'}">
+                <button type="submit" class="btn btn-danger btn-sm" th:disabled="${order.status != 'TRIMISA'}">
                     <i class="fas fa-times"></i> Anulează
                 </button>
             </form>

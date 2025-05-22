@@ -1,77 +1,206 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/jpg" href="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profilul utilizatorului</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/jpg" href="https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg" />
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin-top: 50px;
-        }
-        .profile-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
-        }
-        h1 {
-            color: #007bff;
-            text-align: center;
-            font-weight: 600;
-        }
-        .profile-info p {
-            font-size: 1.1rem;
-            color: #333;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            word-wrap: break-word;
-            white-space: normal;
-        }
-        .profile-info p:last-child {
-            border-bottom: none;
-        }
-        .info-label {
-            font-weight: bold;
-            color: #007bff;
-        }
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa; /* gri foarte deschis */
+        margin-top: 50px;
+    }
 
-        .profile-info .password {
-            word-wrap: break-word;
-            max-width: 100%;
-            overflow-wrap: break-word;
-        }
+    .profile-container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: auto;
+        border: 1px solid #dee2e6; /* gri deschis */
+    }
+
+    h1 {
+        color: #343a40; /* gri închis */
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 30px;
+    }
+
+    .profile-info p {
+        font-size: 1.1rem;
+        color: #212529;
+        padding: 10px 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .info-label {
+        font-weight: bold;
+        color: #495057;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    #phoneInputGroup, #emailInputGroup {
+        display: none;
+        margin-top: 15px;
+    }
+
+    .btn-phone-toggle,
+    .btn-email-toggle,
+    .btn-outline-secondary {
+        white-space: nowrap;
+        border-color: #ff6600;
+        color: #ff6600;
+    }
+
+    .btn-phone-toggle:hover,
+    .btn-email-toggle:hover,
+    .btn-outline-secondary:hover {
+        background-color: #ff6600;
+        color: white;
+    }
+
+    .btn-success {
+        background-color: #ff6600;
+        border-color: #ff6600;
+    }
+
+    .btn-success:hover {
+        background-color: #cc5200;
+        border-color: #cc5200;
+    }
+
+    input.form-control[readonly] {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .alert-info {
+        background-color: #fff3cd;
+        color: #856404;
+        border-color: #ffeeba;
+    }
+
+
     </style>
 </head>
 <body>
 <div class="container">
     <div class="profile-container">
         <h1>Detaliile tale</h1>
+
+        <div th:if="${statusMessage}" class="alert alert-info" th:text="${statusMessage}"></div>
         <div class="profile-info">
-            <p th:if="${authProvider == 'Google'}">
+            <p>
                 <span class="info-label">Email:</span>
-                <span th:text="${userEmail}">User's email</span>
+            <div class="input-group">
+                <input
+                        type="email"
+                        class="form-control"
+                        th:value="${userEmail}"
+                        readonly
+                        aria-label="Email curent"
+                        id="emailDisplay"
+                />
+            </div>
             </p>
-            <p th:if="${authProvider == 'Facebook'}">
-                <span class="info-label">Email:</span>
-                <span th:text="${userEmail}">User's email</span>
+
+            <p class="mt-4">
+                <span class="info-label">Telefon curent:</span>
+            <div class="input-group">
+        <span class="input-group-text">
+            <img src="https://flagcdn.com/16x12/ro.png" alt="RO" style="margin-right: 5px;" />
+            +40
+        </span>
+                <input
+                        type="text"
+                        class="form-control"
+                        readonly
+                        aria-label="Telefon curent"
+                        id="phoneDisplay"
+                        th:value="${user != null and user.phoneNumber != null} ? ${user.phoneNumber.replace('+40', '')} : ''"
+                />
+                <button type="button" class="btn btn-outline-primary btn-phone-toggle" id="togglePhoneInputBtn"
+                        th:text="${user != null and user.phoneNumber != null} ? 'Schimbă numărul' : 'Adaugă număr'">
+                    Adaugă număr
+                </button>
+            </div>
             </p>
-            <p th:if="${authProvider == 'Local'}">
-                <span class="info-label">Email:</span>
-                <span th:text="${userEmail}">User's email</span>
-            </p>
+
+
+            <form th:action="@{/verifyphone}" method="post" id="phoneInputGroup" class="mt-3">
+                <label for="newPhone" class="info-label">Număr de telefon:</label>
+                <div class="input-group">
+        <span class="input-group-text">
+            <img src="https://flagcdn.com/16x12/ro.png" alt="RO" style="margin-right: 5px;" />
+            +40
+        </span>
+                    <input
+                            type="text"
+                            id="newPhone"
+                            name="phone"
+                            class="form-control"
+                            placeholder="751777343"
+                            pattern="0?[0-9]{9}"
+                            title="Număr valid: 0751777343 sau 751777343"
+                            required
+                    />
+                </div>
+                <button type="submit" class="btn btn-success mt-3">Trimite codul</button>
+            </form>
+            <a href="/getFoodPage" class="btn btn-outline-secondary mt-3" style="width: 100%;">&larr; Înapoi la pagina principală</a>
         </div>
+    </div>
+
+    <div th:if="${statusMessage}" class="alert mt-3">
+        <p th:text="${statusMessage}"></p>
     </div>
 </div>
 
 
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Toggle telefon
+    const togglePhoneBtn = document.getElementById('togglePhoneInputBtn');
+    const phoneInputGroup = document.getElementById('phoneInputGroup');
+
+    togglePhoneBtn.addEventListener('click', () => {
+        if (phoneInputGroup.style.display === 'none' || phoneInputGroup.style.display === '') {
+            phoneInputGroup.style.display = 'block';
+            togglePhoneBtn.textContent = 'Anulează';
+        } else {
+            phoneInputGroup.style.display = 'none';
+            togglePhoneBtn.textContent = phoneInputGroup.querySelector('#phone').value
+                ? 'Schimbă numărul'
+                : 'Adaugă număr';
+        }
+    });
+
+    // Toggle email
+    const toggleEmailBtn = document.getElementById('toggleEmailInputBtn');
+    const emailInputGroup = document.getElementById('emailInputGroup');
+
+    toggleEmailBtn.addEventListener('click', () => {
+        if (emailInputGroup.style.display === 'none' || emailInputGroup.style.display === '') {
+            emailInputGroup.style.display = 'block';
+            toggleEmailBtn.textContent = 'Anulează';
+        } else {
+            emailInputGroup.style.display = 'none';
+            toggleEmailBtn.textContent = 'Schimbă email';
+        }
+    });
+
+    // La încărcare, ascund inputurile
+    window.addEventListener('DOMContentLoaded', () => {
+        phoneInputGroup.style.display = 'none';
+        emailInputGroup.style.display = 'none';
+    });
+</script>
 </body>
 </html>

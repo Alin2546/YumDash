@@ -3,13 +3,17 @@ package com.example.YumDash.Service.FoodService;
 import com.example.YumDash.Model.Dto.CheckoutDto;
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
+import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
+import com.example.YumDash.Service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +22,7 @@ import java.util.Map;
 public class CartService {
 
     public static final String CART_SESSION_KEY = "cart";
+    private final UserService userService;
 
 
     private final FoodProviderService foodProviderService;
@@ -51,7 +56,7 @@ public class CartService {
                 .sum();
     }
 
-    public void populateCartViewModel(Model model, HttpSession session, CheckoutDto checkoutDto) {
+    public void populateCartViewModel(Model model, HttpSession session, CheckoutDto checkoutDto, Principal principal) {
         @SuppressWarnings("unchecked")
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
         if (cart == null) cart = new HashMap<>();
@@ -98,7 +103,23 @@ public class CartService {
             checkoutDto = new CheckoutDto();
             checkoutDto.setDeliveryAddress(userAddress);
         }
-
+        if (principal != null) {
+            User user;
+            if (principal instanceof OAuth2AuthenticationToken oauthToken) {
+                String email = oauthToken.getPrincipal().getAttribute("email");
+                user = userService.findByEmail(email).orElse(null);
+            } else {
+                String email = principal.getName();
+                user = userService.findByEmail(email).orElse(null);
+            }
+            if (user != null && user.getPhoneNumber() != null) {
+                String phone = user.getPhoneNumber();
+                if (phone.startsWith("+4")) {
+                    phone = phone.substring(2);
+                }
+                checkoutDto.setPhoneNumber(phone);
+            }
+        }
         model.addAttribute("checkoutDto", checkoutDto);
     }
 

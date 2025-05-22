@@ -8,10 +8,8 @@ import com.example.YumDash.Model.Food.FoodProvider;
 import com.example.YumDash.Model.Food.OrderItem;
 import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
-import com.example.YumDash.Service.EmailService;
+import com.example.YumDash.Service.*;
 import com.example.YumDash.Service.SecurityService.MyUser;
-import com.example.YumDash.Service.OrderService;
-import com.example.YumDash.Service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +23,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +37,8 @@ public class UserController {
     private final UserService userService;
     private final OrderService orderService;
     private final EmailService emailService;
+    private final PhoneService phoneService;
+    private final SmsService smsService;
 
     @GetMapping("/register/form")
     public String displayUserForm(Model model) {
@@ -118,6 +120,9 @@ public class UserController {
                 model.addAttribute("authProvider", "Google");
                 model.addAttribute("userName", fullName);
                 model.addAttribute("userEmail", email);
+                User user = userService.findByEmail(email).orElse(null);
+                model.addAttribute("user", user);
+
             } else if (principal instanceof OAuth2User oauth2User) {
                 String githubLogin = oauth2User.getAttribute("login");
                 String email = oauth2User.getAttribute("email");
@@ -125,10 +130,15 @@ public class UserController {
                 model.addAttribute("authProvider", "Facebook");
                 model.addAttribute("userName", githubLogin);
                 model.addAttribute("userEmail", email);
+
+                User user = userService.findByEmail(email).orElse(null);
+                model.addAttribute("user", user);
+
             } else if (principal instanceof MyUser myUser) {
                 model.addAttribute("authProvider", "Local");
                 model.addAttribute("userName", myUser.getName());
                 model.addAttribute("userEmail", myUser.getUsername());
+                model.addAttribute("user", myUser);
             }
         }
         return "userProfile";
@@ -160,6 +170,7 @@ public class UserController {
                             provider.getName(),
                             provider.getImageurl(),
                             order.getOrderDate(),
+                            order.getPhoneNumber(),
                             order.getAmount(),
                             order.getStatus(),
                             order.getUser() != null ? order.getUser().getEmail() : null,
@@ -231,8 +242,6 @@ public class UserController {
     }
 
 
-
-
     @PostMapping("/resetPassword")
     public String resetPassword(@Valid @ModelAttribute ResetPasswordDto resetPasswordDto,
                                 BindingResult result,
@@ -286,4 +295,83 @@ public class UserController {
     public String successPassword() {
         return "resetPasswordSuccess";
     }
+
+    private String extractEmailFromPrincipal(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof OidcUser oidcUser) {
+            return oidcUser.getEmail();
+        } else if (principal instanceof OAuth2User oauth2User) {
+            return oauth2User.getAttribute("email");
+        } else if (principal instanceof MyUser myUser) {
+            return myUser.getUsername();
+        } else {
+
+            return authentication.getName();
+        }
+    }
+
+    @PostMapping("/verifyphone")
+    public String sendCode(@RequestParam String phone, Authentication authentication, RedirectAttributes redirectAttributes) {
+        String email = extractEmailFromPrincipal(authentication);
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Utilizator inexistent."));
+
+        try {
+            phone = smsService.formatPhoneNumber(phone);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("statusMessage", "Număr de telefon invalid.");
+            return "redirect:/profile";
+        }
+
+        try {
+            phoneService.startPhoneVerification(user, phone);
+            redirectAttributes.addFlashAttribute("phone", phone);
+            redirectAttributes.addFlashAttribute("statusMessage", "Codul a fost trimis prin SMS!");
+            return "redirect:/verifyphone?phone=" + phone;
+        } catch (com.twilio.exception.ApiException ex) {
+            if (ex.getMessage().toLowerCase().contains("unverified")) {
+                redirectAttributes.addFlashAttribute("statusMessage", "Numărul pe care vrei să îl trimiți este invalid sau neverificat.");
+            } else {
+                redirectAttributes.addFlashAttribute("statusMessage", "A apărut o eroare la trimiterea codului. Încearcă din nou.");
+            }
+            return "redirect:/profile";
+        }
+    }
+
+
+    @PostMapping("/confirmphone")
+    public String confirmCode(@RequestParam String phone,
+                              @RequestParam String code,
+                              Authentication authentication,
+                              Model model) {
+
+        String email = extractEmailFromPrincipal(authentication);
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Utilizator inexistent."));
+
+        boolean success = phoneService.verifyCode(user, phone, code);
+
+        if (success) {
+            user.setPhoneVerified(true);
+            userService.updateUser(user);
+            model.addAttribute("redirectUrl", "/profile");
+            return "phoneVerified";
+        }
+
+        model.addAttribute("phone", phone);
+        model.addAttribute("errorMessage", "Codul introdus este greșit sau expirat.");
+        return "verifyphone";
+    }
+
+
+    @GetMapping("/verifyphone")
+    public String showVerificationPage(@RequestParam String phone, Model model) {
+        model.addAttribute("phone", phone);
+        return "verifyphone";
+    }
+
+
 }
+
+

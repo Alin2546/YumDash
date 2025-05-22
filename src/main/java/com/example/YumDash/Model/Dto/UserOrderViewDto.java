@@ -18,6 +18,7 @@ public class UserOrderViewDto {
     private String restaurantName;
     private String restaurantImageUrl;
     private LocalDateTime orderDate;
+    private String phoneNumber;
     private double amount;
     private String status;
     private String userEmail;

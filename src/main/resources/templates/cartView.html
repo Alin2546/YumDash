@@ -126,7 +126,6 @@
     </style>
 </head>
 <body>
-
 <div class="header">
     <h2>YumDash</h2>
     <h1>Coșul tău</h1>
@@ -182,14 +181,15 @@
                             <span th:errors="*{deliveryAddress}"></span>
                         </div>
                     </div>
-
-
-
                     <div id="map"></div>
-
                     <div class="form-group">
                         <label for="phoneNumber">Număr de telefon:</label>
-                        <input type="text" id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="Ex: 07XX.XXX.XXX" />
+                        <input type="text"
+                               id="phoneNumber"
+                               name="phoneNumber"
+                               th:field="*{phoneNumber}"
+                               class="form-control"
+                               placeholder="Ex: 07XX.XXX.XXX" />
                         <div th:if="${#fields.hasErrors('phoneNumber')}" class="text-danger">
                             <span th:errors="*{phoneNumber}"></span>
                         </div>

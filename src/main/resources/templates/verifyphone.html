@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ro" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verificare Telefon</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa; /* gri deschis, modern */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 60px;
+    }
+
+    .verification-container {
+      max-width: 400px;
+      background-color: white;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      margin: auto;
+      border: 1px solid #dee2e6;
+      text-align: center;
+    }
+
+    h2 {
+      color: #ff6600;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+
+    .code-inputs {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .code-inputs input {
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+      text-align: center;
+      border: 2px solid #ff6600;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      color: #333;
+      background-color: #fff;
+    }
+
+    .code-inputs input:focus {
+      border-color: #cc5200;
+      box-shadow: 0 0 8px rgba(255, 102, 0, 0.4);
+      outline: none;
+      transform: scale(1.05);
+    }
+
+    button {
+      background-color: #ff6600;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      padding: 10px 0;
+      width: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 25px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #cc5200;
+    }
+
+    p.status-message {
+      margin-top: 20px;
+      color: #cc5200;
+      font-weight: 500;
+      background-color: #fff3e0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ffd199;
+    }
+  </style>
+
+</head>
+<body>
+<div class="verification-container">
+  <h2>Introdu codul primit prin SMS</h2>
+
+  <form th:action="@{/confirmphone}" method="post" onsubmit="combineCode()">
+    <input type="hidden" name="phone" th:value="${phone}" />
+    <input type="hidden" name="code" id="fullCode" />
+
+    <div class="code-inputs">
+      <input type="text" maxlength="1" oninput="moveToNext(this, 'code2')" id="code1" />
+      <input type="text" maxlength="1" oninput="moveToNext(this, 'code3')" id="code2" />
+      <input type="text" maxlength="1" oninput="moveToNext(this, 'code4')" id="code3" />
+      <input type="text" maxlength="1" oninput="moveToNext(this, null)" id="code4" />
+    </div>
+
+    <button type="submit">Verifică</button>
+  </form>
+
+  <p class="status-message" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+</div>
+
+<script>
+  function moveToNext(current, nextId) {
+    if (current.value.length === 1 && nextId) {
+      document.getElementById(nextId).focus();
+    }
+  }
+
+  function combineCode() {
+    const c1 = document.getElementById("code1").value;
+    const c2 = document.getElementById("code2").value;
+    const c3 = document.getElementById("code3").value;
+    const c4 = document.getElementById("code4").value;
+    document.getElementById("fullCode").value = c1 + c2 + c3 + c4;
+  }
+
+  window.onload = () => {
+    document.getElementById("code1").focus();
+  };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
