@@ -38,6 +38,8 @@ public class MyUser implements UserDetails {
     @Override
     public boolean isEnabled() { return user.isActive(); }
 
-
+    public String getPhoneNumber() {
+        return user.getPhoneNumber();
+    }
 
 }
