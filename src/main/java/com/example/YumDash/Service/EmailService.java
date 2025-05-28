@@ -41,7 +41,7 @@ public class EmailService {
                 "<a href='http://localhost:8080/loginForm' " +
                 "style='display: inline-block; padding: 10px 20px; background-color: #2d7dd2; color: white; text-decoration: none; border-radius: 5px;'>Autentifică-te</a>" +
                 "<br><br>" +
-                "<img src='https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg' alt='Logo aplicație' width='150'/>" +
+                "<img src='https://i.postimg.cc/DzkydT83/Yum-Dash-Logo.jpg' alt='Logo aplicație' width='150'/>" +
                 "</body>" +
                 "</html>";
         try {
@@ -62,7 +62,7 @@ public class EmailService {
                 "<a href='" + resetLink + "' " +
                 "style='display: inline-block; padding: 10px 20px; background-color: #2d7dd2; color: white; text-decoration: none; border-radius: 5px;'>Resetează parola</a>" +
                 "<p style='margin-top:20px;'>Dacă nu ai solicitat această acțiune, poți ignora acest mesaj.</p>" +
-                "<br><img src='https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg' alt='Logo aplicație' width='150'/>" +
+                "<br><img src='https://i.postimg.cc/DzkydT83/Yum-Dash-Logo.jpg' alt='Logo aplicație' width='150'/>" +
                 "</body>" +
                 "</html>";
 
@@ -82,7 +82,7 @@ public class EmailService {
                 "<p>Codul tău de verificare este: <strong style='font-size: 20px;'>" + verificationCode + "</strong></p>" +
                 "<p>Te rugăm să îl introduci pentru a activa contul.</p>" +
                 "<br><p>Mulțumim,<br>Echipa YumDash</p>" +
-                "<br><img src='https://i.postimg.cc/fTk59P3d/Yum-Dash-Logo.jpg' alt='Logo aplicație' width='150'/>" +
+                "<br><img src='https://i.postimg.cc/DzkydT83/Yum-Dash-Logo.jpg' alt='Logo aplicație' width='150'/>" +
                 "</div>";
         try {
             sendHtmlEmail(toEmail, subject, htmlContent);

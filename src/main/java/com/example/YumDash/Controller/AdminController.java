@@ -26,7 +26,6 @@ public class AdminController {
     private final UserService userService;
     private final FoodProviderService foodProviderService;
     private final OrderService orderService;
-    private final UserRepo userRepo;
 
 
     @GetMapping("/dashboard")

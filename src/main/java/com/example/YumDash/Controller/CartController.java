@@ -9,11 +9,12 @@ import com.example.YumDash.Service.FoodService.CartService;
 import com.example.YumDash.Service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import java.security.Principal;
 import java.util.*;
@@ -29,9 +30,17 @@ public class CartController {
 
 
     @PostMapping("/add")
-    public String addToCart(@RequestParam("foodProductId") Integer foodProductId, HttpSession session, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public ResponseEntity<String> addToCart(@RequestParam("foodProductId") Integer foodProductId,
+                                            @RequestParam(value = "quantity", defaultValue = "1") Integer quantity,
+                                            HttpSession session) {
+
+        if (quantity <= 0) {
+            return ResponseEntity.badRequest().body("Cantitatea trebuie să fie cel puțin 1.");
+        }
+
         FoodProduct foodProduct = foodProductRepo.findById(foodProductId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Produsul nu a fost găsit."));
 
         @SuppressWarnings("unchecked")
         Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
@@ -47,20 +56,17 @@ public class CartController {
         Integer productRestaurantId = foodProduct.getFoodProvider().getId();
         Integer selectedRestaurantId = (Integer) session.getAttribute("selectedRestaurantId");
 
-
         if (selectedRestaurantId == null) {
             session.setAttribute("selectedRestaurantId", productRestaurantId);
         } else if (!selectedRestaurantId.equals(productRestaurantId)) {
-            redirectAttributes.addFlashAttribute("error", "Poți comanda doar de la un singur restaurant.");
-
-
-            return "redirect:/products?providerId=" + productRestaurantId +
-                    (session.getAttribute("selectedCategory") != null ? "&category=" + session.getAttribute("selectedCategory") : "");
+            return ResponseEntity.badRequest().body("Poți comanda doar de la un singur restaurant.");
         }
 
-        cart.put(foodProductId, cart.getOrDefault(foodProductId, 0) + 1);
-        return "redirect:/cart/view";
+        cart.put(foodProductId, cart.getOrDefault(foodProductId, 0) + quantity);
+
+        return ResponseEntity.ok("Produs adăugat în coș.");
     }
+
 
 
     @GetMapping("/view")

@@ -53,17 +53,14 @@
 
 <div class="card shadow p-4 mb-5">
     <div class="card-header">
-        <h2>Restaurantul Dumneavoastră: <span th:text="${foodProvider.name}"></span></h2>
+        <h2>Magazinul Dumneavoastră: <span th:text="${foodProvider.name}"></span></h2>
     </div>
 
     <div class="card-body">
-
-        <!-- Imagine restaurant -->
         <div class="form-group mb-3">
             <label for="storeImage" class="form-label fw-semibold">Imagine Restaurant:</label><br>
             <img th:src="@{${foodProvider.imageurl}}" class="preview-image" alt="Imagine Restaurant" />
         </div>
-
 
         <div class="text-end mb-3">
             <a href="#" onclick="toggleImageForm(event)" class="btn btn-sm btn-outline-secondary">
@@ -135,7 +132,7 @@
 
         <hr>
 
-        <h4>Produse Existente</h4>
+        <h4>Produsele magazinului</h4>
         <table class="table">
             <thead>
             <tr>
@@ -212,21 +209,56 @@
             <span class="badge bg-secondary" th:text="${order.status}"></span>
         </td>
         <td>
-            <form th:action="@{/provider/orders/{id}/accept(id=${order.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-success btn-sm" th:disabled="${order.status != 'TRIMISA'}">
-                    <i class="fas fa-check"></i> Acceptă
+            <div class="d-flex flex-wrap gap-2">
+                <form th:action="@{/provider/orders/{id}/accept(id=${order.id})}" method="post">
+                    <button type="submit" class="btn btn-success btn-sm" th:disabled="${order.status != 'TRIMISA'}">
+                        <i class="fas fa-check"></i> Acceptă
+                    </button>
+                </form>
+
+                <form th:action="@{/provider/orders/{id}/cancel(id=${order.id})}" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm" th:disabled="${order.status != 'TRIMISA'}">
+                        <i class="fas fa-times"></i> Anulează
+                    </button>
+                </form>
+
+
+                <button type="button" class="btn btn-info btn-sm"
+                        th:attr="data-bs-toggle='modal'"
+                        th:attrappend="data-bs-target='#confirmModal-' + ${order.id}"
+                        th:disabled="${order.status != 'CONFIRMATA'}">
+                    <i class="fas fa-truck"></i> Marchează ca livrată
                 </button>
-            </form>
-            <form th:action="@{/provider/orders/{id}/cancel(id=${order.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-sm" th:disabled="${order.status != 'TRIMISA'}">
-                    <i class="fas fa-times"></i> Anulează
-                </button>
-            </form>
+            </div>
+
+
+            <div class="modal fade" th:id="'confirmModal-' + ${order.id}" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabel">Confirmare Livrare</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+                        </div>
+                        <div class="modal-body">
+                            Ești sigur că vrei să marchezi această comandă ca livrată?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nu</button>
+                            <form th:action="@{/provider/orders/{id}/markDelivered(id=${order.id})}" method="post">
+                                <button type="submit" class="btn btn-info">Da, livrează</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </td>
     </tr>
     </tbody>
 </table>
 
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     function updatePreview() {

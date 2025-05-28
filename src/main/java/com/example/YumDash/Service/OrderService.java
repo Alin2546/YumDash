@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -64,7 +65,11 @@ public class OrderService {
         return orderRepo.findByUserOrderByOrderDateAsc(user);
     }
 
-    public void createOrder(UserOrder userOrder){orderRepo.save(userOrder);
+    public void createOrder(UserOrder userOrder){
+        if (userOrder.getUser() == null) {
+            throw new NoSuchElementException("User must not be null");
+        }
+        orderRepo.save(userOrder);
     }
 
     public Optional<UserOrder> findById(int id) {

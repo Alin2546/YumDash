@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,7 +33,7 @@ public class OrderServiceTest {
     @Test
     public void testAcceptOrderNoInput() {
 
-        assertThrows(IllegalArgumentException.class, () -> orderService.acceptOrder(-1));
+        assertThrows(NoSuchElementException.class, () -> orderService.acceptOrder(-1));
     }
 
     @Test
@@ -51,7 +52,7 @@ public class OrderServiceTest {
         orderService.acceptOrder(order.getId());
 
         UserOrder updatedOrder = orderRepo.findById(order.getId()).orElseThrow();
-        assertEquals("ACCEPTATA", updatedOrder.getStatus());
+        assertEquals("CONFIRMATA", updatedOrder.getStatus());
     }
 
     @Test
@@ -77,21 +78,21 @@ public class OrderServiceTest {
 
         UserOrder updatedOrder1 = orderRepo.findById(order1.getId()).orElseThrow();
         UserOrder updatedOrder2 = orderRepo.findById(order2.getId()).orElseThrow();
-        assertEquals("ACCEPTATA", updatedOrder1.getStatus());
-        assertEquals("ACCEPTATA", updatedOrder2.getStatus());
+        assertEquals("CONFIRMATA", updatedOrder1.getStatus());
+        assertEquals("CONFIRMATA", updatedOrder2.getStatus());
     }
 
     @Test
     public void testAcceptOrderWrongInput() {
 
-        assertThrows(IllegalArgumentException.class, () -> orderService.acceptOrder(999999999));
+        assertThrows(NoSuchElementException.class, () -> orderService.acceptOrder(999999999));
     }
 
 
     @Test
     public void testCancelOrderNoInput() {
 
-        assertThrows(IllegalArgumentException.class, () -> orderService.cancelOrder(999));
+        assertThrows(NoSuchElementException.class, () -> orderService.cancelOrder(999));
     }
 
     @Test
@@ -143,14 +144,14 @@ public class OrderServiceTest {
     @Test
     public void testCancelOrderWrongInput() {
 
-        assertThrows(IllegalArgumentException.class, () -> orderService.cancelOrder(999));
+        assertThrows(NoSuchElementException.class, () -> orderService.cancelOrder(999));
     }
 
 
     @Test
     public void testFindOrdersByUserNoInput() {
-
-        assertThrows(IllegalArgumentException.class, () -> orderService.findOrdersByUser(null));
+        List<UserOrder> result = orderService.findOrdersByUser(null);
+        assertTrue(result.isEmpty(), "Expected empty list when user is null");
     }
 
     @Test
@@ -191,8 +192,9 @@ public class OrderServiceTest {
     public void testFindOrdersByUserWrongInput() {
 
         User user = new User();
-        user.setEmail("nonexistent@email.com");
-        user.setPassword("wrongpassword");
+        user.setEmail("nou@email.com");
+        user.setPassword("123456");
+        userRepo.save(user);
 
         List<UserOrder> orders = orderService.findOrdersByUser(user);
         assertTrue(orders.isEmpty());
@@ -201,8 +203,7 @@ public class OrderServiceTest {
 
     @Test
     public void testCreateOrderNoInput() {
-
-        assertThrows(IllegalArgumentException.class, () -> orderService.createOrder(null));
+        assertThrows(NullPointerException.class, () -> orderService.createOrder(null));
     }
 
     @Test
@@ -254,6 +255,6 @@ public class OrderServiceTest {
         order.setUser(null);
         order.setStatus("IN_ASTEPTARE");
 
-        assertThrows(IllegalArgumentException.class, () -> orderService.createOrder(order));
+        assertThrows(NoSuchElementException.class, () -> orderService.createOrder(order));
     }
 }

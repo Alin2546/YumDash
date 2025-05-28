@@ -91,9 +91,9 @@ public class FoodProviderService {
 
     public List<FoodProvider> getNearbyRestaurants(String userAddress) {
 
+        if (userAddress == null) return null;
         double[] userCoords = googleMapsService.getCoordinates(userAddress);
         if (userCoords == null) return null;
-
         List<FoodProvider> allRestaurants = foodProviderRepo.findAll();
 
         return allRestaurants.stream()
@@ -105,6 +105,9 @@ public class FoodProviderService {
     }
 
     public boolean isWithinDeliveryRange(FoodProvider provider, String userAddress) {
+        if (provider == null || userAddress == null) {
+            return false;
+        }
         double[] userCoords = googleMapsService.getCoordinates(userAddress);
         if (userCoords == null) return false;
         double distance = haversine(userCoords[0], userCoords[1], provider.getLatitude(), provider.getLongitude());

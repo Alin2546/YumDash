@@ -203,4 +203,17 @@ public class FoodOwnerController {
         return "redirect:/provider/products";
     }
 
+    @PostMapping("/provider/orders/{id}/markDelivered")
+    public String markOrderAsDelivered(@PathVariable int id) {
+        Optional<UserOrder> optionalOrder = orderRepo.findById(id);
+        if (optionalOrder.isPresent()) {
+            UserOrder order = optionalOrder.get();
+            if ("CONFIRMATA".equals(order.getStatus())) {
+                order.setStatus("LIVRATA");
+                orderRepo.save(order);
+            }
+        }
+        return "redirect:/provider/products";
+    }
+
 }

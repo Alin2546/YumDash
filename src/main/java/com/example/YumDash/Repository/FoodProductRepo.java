@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface FoodProductRepo extends JpaRepository<FoodProduct,Integer> {
     List<FoodProduct> findByFoodProvider(FoodProvider provider);
-    List<FoodProduct> findByFoodProviderIdAndAvailable(int foodProviderId, boolean available);
-    List<FoodProduct> findByFoodProviderIdAndCategoryAndAvailable(int foodProviderId, Category category, boolean available);
+    List<FoodProduct> findByFoodProviderId(int providerId);
+    List<FoodProduct> findByFoodProviderIdAndCategory(int providerId, Category category);
 }

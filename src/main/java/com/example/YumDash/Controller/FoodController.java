@@ -15,10 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -35,19 +32,29 @@ public class FoodController {
             @RequestParam(name = "category", required = false) Category category,
             Model model
     ) {
-        List<FoodProduct> products;
         FoodProvider provider = foodProviderService.findById(providerId);
-        if (category != null) {
-            products = foodProductService.getAvailableProductsByProviderIdAndCategory(providerId, category);
-        } else {
-            products = foodProductService.getAvailableProductsByProviderId(providerId);
-        }
+
+        List<FoodProduct> products = (category != null)
+                ? foodProductService.getProductsByProviderIdAndCategory(providerId, category)
+                : foodProductService.getProductsByProviderId(providerId);
+
+        Set<Category> availableCategoriesSet = products.stream()
+                .map(FoodProduct::getCategory)
+                .collect(Collectors.toSet());
+
+
+        List<Category> availableCategories = new ArrayList<>(availableCategoriesSet);
+
+        List<Category> sortedCategories = foodProductService.sortCategoriesCustom(availableCategories);
+
         model.addAttribute("foodProvider", provider);
         model.addAttribute("products", products);
-        model.addAttribute("categories", Category.values());
+        model.addAttribute("categories", sortedCategories);
         model.addAttribute("selectedCategory", category);
+
         return "restaurantDetails";
     }
+
 
     @GetMapping("/search")
     public String search(@RequestParam String keyword,

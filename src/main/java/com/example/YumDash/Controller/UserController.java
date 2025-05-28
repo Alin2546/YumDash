@@ -159,6 +159,7 @@ public class UserController {
         List<UserOrder> userOrders = orderService.findOrdersByUser(user);
 
         List<UserOrderViewDto> orderDtos = userOrders.stream()
+                .filter(order -> order.getFoodProvider() != null)
                 .map(order -> {
                     FoodProvider provider = order.getFoodProvider();
                     List<OrderItemDto> items = order.getOrderItems().stream()
