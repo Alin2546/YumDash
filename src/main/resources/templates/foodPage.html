@@ -42,7 +42,7 @@
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    width: 280px;
+    width: 100%;
     height: 220px; /* mic */
     background-color: white;
     position: relative;
@@ -97,6 +97,7 @@
     flex: 0 0 auto;
     max-width: 280px;
     padding: 0;
+
 }
 
 .carousel-item {
@@ -137,17 +138,10 @@
         padding: 0 10px;
     }
 
-    .col-md-4 {
-        max-width: 100%;
-    }
+
 }
 
-        .all-restaurants-row {
-    margin-left: 15px;
-     gap: 10px;
-      display: flex;
-    flex-wrap: wrap;
-}
+
 
 
     </style>
@@ -277,7 +271,7 @@
     <h2 class="mt-5 text-left">Magazinele Noastre</h2>
 
     <div class="row mt-3 all-restaurants-row">
-        <th:block th:each="provider : ${foodProviders}">
+    <th:block th:each="provider : ${foodProviders}">
             <div class="col-md-3 col-sm-6 mb-4">
                 <a th:href="@{/products(providerId=${provider.id})}" class="text-decoration-none text-dark restaurant-card">
                     <img th:src="@{${provider.imageurl}}" alt="Imagine restaurant" />
