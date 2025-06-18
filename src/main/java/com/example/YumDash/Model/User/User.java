@@ -1,8 +1,10 @@
 package com.example.YumDash.Model.User;
 
+import com.example.YumDash.Model.Food.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +32,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserOrder> userOrders;
-
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> authProviders = new HashSet<>();

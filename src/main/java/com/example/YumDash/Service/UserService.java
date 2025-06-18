@@ -2,12 +2,10 @@ package com.example.YumDash.Service;
 
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
+import com.example.YumDash.Model.Food.Review;
 import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
-import com.example.YumDash.Repository.FoodProductRepo;
-import com.example.YumDash.Repository.FoodProviderRepo;
-import com.example.YumDash.Repository.OrderRepo;
-import com.example.YumDash.Repository.UserRepo;
+import com.example.YumDash.Repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +25,7 @@ public class UserService {
     private final FoodProviderRepo foodProviderRepo;
     private final FoodProductRepo foodProductRepo;
     private final OrderRepo orderRepo;
-
+    private final ReviewRepository reviewRepo;
 
     public void createUser(User user) {
         if (user == null) {
@@ -64,21 +62,51 @@ public class UserService {
 
         User user = optionalUser.get();
 
+        List<Review> userReviews = reviewRepo.findByUser(user);
+        if (userReviews != null && !userReviews.isEmpty()) {
+            reviewRepo.deleteAll(userReviews);
+        }
+
         List<UserOrder> userOrders = user.getUserOrders();
-        if (userOrders != null) {
+        if (userOrders != null && !userOrders.isEmpty()) {
+            for (UserOrder order : userOrders) {
+                List<Review> orderReviews = reviewRepo.findByOrder(order);
+                if (orderReviews != null && !orderReviews.isEmpty()) {
+                    reviewRepo.deleteAll(orderReviews);
+                }
+            }
             orderRepo.deleteAll(userOrders);
         }
 
         FoodProvider foodProvider = foodProviderRepo.findByUser(user);
         if (foodProvider != null) {
+            List<Review> providerReviews = reviewRepo.findByFoodProvider(foodProvider);
+            if (providerReviews != null && !providerReviews.isEmpty()) {
+                reviewRepo.deleteAll(providerReviews);
+            }
+
             List<UserOrder> providerOrders = orderRepo.findByFoodProvider(foodProvider);
-            orderRepo.deleteAll(providerOrders);
+            if (providerOrders != null && !providerOrders.isEmpty()) {
+                for (UserOrder order : providerOrders) {
+                    List<Review> orderReviews = reviewRepo.findByOrder(order);
+                    if (orderReviews != null && !orderReviews.isEmpty()) {
+                        reviewRepo.deleteAll(orderReviews);
+                    }
+                }
+                orderRepo.deleteAll(providerOrders);
+            }
+
             List<FoodProduct> foodProducts = foodProductRepo.findByFoodProvider(foodProvider);
-            foodProductRepo.deleteAll(foodProducts);
+            if (foodProducts != null && !foodProducts.isEmpty()) {
+                foodProductRepo.deleteAll(foodProducts);
+            }
+
             foodProviderRepo.delete(foodProvider);
         }
+
         usersRepo.delete(user);
     }
+
 
     public String generateVerificationCode() {
         Random random = new Random();

@@ -14,4 +14,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findByUserAndFoodProviderAndOrder(User user, FoodProvider provider, UserOrder order);
     List<Review> findAllByFoodProviderId(int foodProviderId);
 
+    List<Review> findByUser(User user);
+
+    List<Review> findByOrder(UserOrder userOrder);
+
+    List<Review> findByFoodProvider(FoodProvider provider);
 }

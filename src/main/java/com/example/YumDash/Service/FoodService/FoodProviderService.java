@@ -4,13 +4,11 @@ import com.example.YumDash.Model.Dto.CreateFoodProviderDto;
 import com.example.YumDash.Model.Food.FoodProduct;
 import com.example.YumDash.Model.Food.FoodProvider;
 
+import com.example.YumDash.Model.Food.Review;
 import com.example.YumDash.Model.User.User;
 import com.example.YumDash.Model.User.UserOrder;
-import com.example.YumDash.Repository.FoodProductRepo;
-import com.example.YumDash.Repository.FoodProviderRepo;
+import com.example.YumDash.Repository.*;
 
-import com.example.YumDash.Repository.OrderRepo;
-import com.example.YumDash.Repository.UserRepo;
 import com.example.YumDash.Service.GoogleMapsService;
 
 import com.example.YumDash.Service.UserService;
@@ -36,6 +34,7 @@ public class FoodProviderService {
     private final UserRepo userRepo;
     private final OrderRepo orderRepo;
     private final UserService userService;
+    private final ReviewRepository reviewRepo;
 
 
     public FoodProvider getFoodProviderByEmail(String email) {
@@ -73,11 +72,20 @@ public class FoodProviderService {
 
         User user = provider.getUser();
 
+        List<Review> providerReviews = reviewRepo.findByFoodProvider(provider);
+        if (providerReviews != null && !providerReviews.isEmpty()) {
+            reviewRepo.deleteAll(providerReviews);
+        }
+
         List<UserOrder> userOrders = orderRepo.findByFoodProvider(provider);
         for (UserOrder userOrder : userOrders) {
-            userOrder.setFoodProvider(null);
-            orderRepo.save(userOrder);
+            List<Review> orderReviews = reviewRepo.findByOrder(userOrder);
+            if (orderReviews != null && !orderReviews.isEmpty()) {
+                reviewRepo.deleteAll(orderReviews);
+            }
         }
+
+        orderRepo.deleteAll(userOrders);
 
         List<FoodProduct> foodProducts = foodProductRepo.findByFoodProvider(provider);
         foodProductRepo.deleteAll(foodProducts);
