@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Urmărire comandă</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h2 {
+      color: #00b894;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: #444;
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .back-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #00b894;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #019875;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h2>📦 Urmărire comandă</h2>
+  <p th:text="'Comanda #'+${order.id}"></p>
+  <p>Momentan comanda nu poate fi urmărită.</p>
+  <p>Restaurantele folosesc șoferii proprii.</p>
+
+  <button class="back-btn" onclick="window.location.href='/getFoodPage'">Înapoi la pagină principală</button>
+</div>
+</body>
+</html>

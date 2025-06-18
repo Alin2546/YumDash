@@ -24,6 +24,7 @@ public class User {
     private String address;
     private boolean isActive;
     private String verificationCode;
+    private boolean isDiscountUsed = false;
     private String phoneNumber;
     private boolean phoneVerified = false;
 

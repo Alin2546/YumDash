@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YumDash</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/jpg" href="https://i.ibb.co/nq3qvVch/Yum-Dash-Logo.jpg">
+    <link rel="icon" type="image/jpg" href="/FoodImages/YumDashLogo.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
@@ -16,11 +16,16 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: white;
+             position: relative;
         }
 
         .restaurant-card img {
             width: 100%;
-            height: 200px;
+            height: 150px;
             object-fit: cover;
             border-bottom: 2px solid #ddd;
             transition: transform 0.3s ease;
@@ -37,12 +42,19 @@
 
         .restaurant-card .card-body {
             background-color: #f8f9fa;
-            padding: 15px;
+            padding: 10px;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .restaurant-card .card-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: bold;
+            color: #222;
+            margin: 0;
+            text-align: center;
         }
 
         .cart-btn img {
@@ -66,20 +78,47 @@
             padding: 3px 7px;
             border-radius: 50%;
         }
+
+        .carousel-inner .row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            padding: 10px;
+        }
+
+        .all-restaurants-row {
+            margin: 0 30px;
+        }
+
+        @media (max-width: 768px) {
+            .restaurant-card img {
+                height: 120px;
+            }
+
+            .restaurant-card .card-title {
+                font-size: 1rem;
+            }
+
+            .all-restaurants-row {
+                margin: 0 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
-
 <nav class="navbar p-2" style="background-color: transparent; box-shadow: none;">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-
         <a href="/" class="navbar-brand d-flex align-items-center">
             <span style="font-size: 2.5rem; font-weight: bold; color: #FFA500; margin-right: 10px;">YumDash</span>
-            <img src="https://i.ibb.co/nq3qvVch/Yum-Dash-Logo.jpg" alt="YumDash Logo" style="width: 50px; height: 50px;" class="rounded-circle">
+            <img src="/FoodImages/YumDashLogo.jpg" alt="YumDash Logo" style="width: 50px; height: 50px;" class="rounded-circle">
         </a>
-
-
         <div class="d-flex align-items-center">
             <form class="d-flex me-3" action="/search" method="get">
                 <input class="form-control me-2" type="search" name="keyword" placeholder="Ce preferi azi? :)" aria-label="Search" required>
@@ -89,62 +128,169 @@
             <div class="d-flex align-items-center">
                 <div class="cart-btn me-3 position-relative">
                     <a href="/cart/view" class="btn btn-outline-warning d-flex align-items-center">
-                        <img src="https://cdn-icons-png.flaticon.com/128/1170/1170576.png" alt="Shopping Cart" style="width: 30px; height: 30px; margin-right: 8px;">
+                        <img src="https://cdn-icons-png.flaticon.com/128/1170/1170576.png" alt="Shopping Cart">
                         <span th:text="${cartRestaurantName != null ? cartRestaurantName : 'Coșul tău'}">Coșul tău</span>
                         <span class="badge" th:text="${cartSize}">0</span>
                     </a>
                 </div>
 
+                <div th:unless="${loggedInUser}" class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Conectare / Înregistrare
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="/loginForm"><i class="fas fa-sign-in-alt me-2 text-primary"></i>Conectare</a></li>
+                        <li><a class="dropdown-item" href="/register/form"><i class="fas fa-user-plus me-2 text-success"></i>Înregistrare</a></li>
+                        <li><a class="dropdown-item d-flex align-items-start" href="/addProvider"><i class="fas fa-store text-warning me-2 mt-1"></i><span>Adaugă<br><small>restaurant/magazin</small></span></a></li>
+                    </ul>
+                </div>
 
-            <div th:unless="${loggedInUser}" class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    Conectare / Înregistrare
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="/loginForm"><i class="fas fa-sign-in-alt me-2 text-primary"></i>Conectare</a></li>
-                    <li><a class="dropdown-item" href="/register/form"><i class="fas fa-user-plus me-2 text-success"></i>Înregistrare</a></li>
-                    <li><a class="dropdown-item d-flex align-items-start" href="/addProvider"><i class="fas fa-store text-warning me-2 mt-1"></i><span>Adaugă<br><small>restaurant/magazin</small></span></a></li>
-                </ul>
-            </div>
-
-            <div th:if="${loggedInUser}" class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="user-info">
+                <div th:if="${loggedInUser}" class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         <span th:text="${loggedInUser}">Conectat</span>
-                    </div>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" href="/profile">Profil</a></li>
-                    <li><a class="dropdown-item" href="/orders">Comenzi</a></li>
-                    <li><a class="dropdown-item" href="/logout">Deconectează-te</a></li>
-                </ul>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="/profile">Profil</a></li>
+                        <li><a class="dropdown-item" href="/orders">Comenzi</a></li>
+                        <li><a class="dropdown-item" href="/logout">Deconectează-te</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </nav>
-
 
 <div th:if="${#lists.isEmpty(foodProviders)}" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center;">
     <img th:src="@{'https://ic.nordcdn.com/v1/https://sb.nordcdn.com/m/6212b03348df4437/original/blog-featured-no-location-found-error-on-an-iphone-svg.svg'}" alt="Nu livrăm aici!" style="max-width: 50%; height: 300px; border-radius: 20px;"/>
     <p style="font-size: 1.5rem; font-weight: bold; margin-top: 10px;">Ne pare rău, dar nu livrăm în această zonă!</p>
 </div>
 
-
-<div class="container mt-4">
-    <div class="row g-4 mb-4">
-        <div th:each="foodProvider : ${foodProviders}" class="col-md-4">
-            <a th:href="@{/products(providerId=${foodProvider.id})}" class="text-decoration-none text-dark">
-                <div class="card restaurant-card">
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Restaurant image" th:src="@{${foodProvider.imageurl} ?: 'https://via.placeholder.com/300'}">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${foodProvider.name}"></h5>
-                    </div>
-                </div>
-            </a>
+<div th:if="${loggedInUser == null and !#lists.isEmpty(foodProviders)}">
+<div class="container mt-5">
+    <h2 class="text-center mb-4">🎉 Oferte speciale YumDash</h2>
+    <ul class="nav nav-tabs justify-content-center" id="promoTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="new-customers-tab" data-bs-toggle="tab" data-bs-target="#new-customers" type="button" role="tab" aria-controls="new-customers" aria-selected="true">
+                Reducere 10% pentru clienți noi
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="free-delivery-tab" data-bs-toggle="tab" data-bs-target="#free-delivery" type="button" role="tab" aria-controls="free-delivery" aria-selected="false">
+                Livrare gratuită
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content p-4 border border-top-0 rounded-bottom bg-light" id="promoTabsContent" style="max-width: 600px; margin: auto;">
+        <div class="tab-pane fade show active" id="new-customers" role="tabpanel" aria-labelledby="new-customers-tab">
+            <h5>🎁 Bun venit la YumDash!</h5>
+            <p>Profită de o reducere de 50% la prima ta comandă! Tot ce trebuie să faci este să iti verifici numarul de telefon mobil. Delicii gustoase, direct la ușa ta.</p>
+            <a href="/register/form" class="btn btn-warning">Înregistrează-te acum</a>
+        </div>
+        <div class="tab-pane fade" id="free-delivery" role="tabpanel" aria-labelledby="free-delivery-tab">
+            <h5>🚚 Livrare gratuită la prima comandă</h5>
+            <p>Comandă de minim 100 lei și bucură-te de livrare gratuită! Fără costuri ascunse, doar mâncare delicioasă.</p>
         </div>
     </div>
 </div>
+</div>
 
+<div th:if="${!#lists.isEmpty(topProviders) and !#lists.isEmpty(foodProviders)}">
+    <h2 class="mt-4 text-center">🔥 Magazine populare</h2>
+    <div id="topProvidersCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <th:block th:each="group, iterStat : ${groupedProviders}">
+                <div class="carousel-item" th:classappend="${iterStat.index == 0} ? ' active'">
+                    <div class="row justify-content-center">
+                        <th:block th:each="provider : ${group}">
+                            <div class="col-md-4 col-sm-6 mb-3">
+                                <a th:href="@{/products(providerId=${provider.id})}" class="text-decoration-none text-dark restaurant-card">
+                                    <img th:src="@{${provider.imageurl}}" alt="Imagine restaurant" />
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${provider.name}">Nume Restaurant</h5>
+                                    </div>
+                                    <div th:if="${eligibleForDiscount}"
+                                         style="position: absolute; top: 10px; left: 10px; background-color: #ff6600; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.9rem; z-index: 10;">
+                                        50% reducere
+                                    </div>
+                                </a>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+
+        <button id="prevBtn" class="carousel-control-prev" type="button" data-bs-target="#topProvidersCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button id="nextBtn" class="carousel-control-next" type="button" data-bs-target="#topProvidersCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Următor</span>
+        </button>
+    </div>
+</div>
+
+
+<div th:if="${!#lists.isEmpty(foodProviders)}">
+    <h2 class="mt-5 text-left">Magazinele Noastre</h2>
+
+    <div class="row mt-3 all-restaurants-row">
+        <th:block th:each="provider : ${foodProviders}">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <a th:href="@{/products(providerId=${provider.id})}" class="text-decoration-none text-dark restaurant-card">
+                    <img th:src="@{${provider.imageurl}}" alt="Imagine restaurant" />
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${provider.name}">Nume Restaurant</h5>
+                    </div>
+                    <div th:if="${eligibleForDiscount}"
+                         style="position: absolute; top: 10px; left: 10px; background-color: #ff6600; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.9rem; z-index: 10;">
+                        50% reducere
+                    </div>
+                </a>
+            </div>
+        </th:block>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const carouselElement = document.getElementById('topProvidersCarousel');
+        const carousel = new bootstrap.Carousel(carouselElement);
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // Funcție care actualizează starea butoanelor
+        function updateButtons() {
+            const activeItem = carouselElement.querySelector('.carousel-item.active');
+            const items = carouselElement.querySelectorAll('.carousel-item');
+            const activeIndex = Array.from(items).indexOf(activeItem);
+
+            // Dezactivează butonul 'prev' dacă ești pe primul slide
+            if (activeIndex === 0) {
+                prevBtn.classList.add('disabled');
+                prevBtn.setAttribute('aria-disabled', 'true');
+            } else {
+                prevBtn.classList.remove('disabled');
+                prevBtn.removeAttribute('aria-disabled');
+            }
+
+            // Dezactivează butonul 'next' dacă ești pe ultimul slide
+            if (activeIndex === items.length - 1) {
+                nextBtn.classList.add('disabled');
+                nextBtn.setAttribute('aria-disabled', 'true');
+            } else {
+                nextBtn.classList.remove('disabled');
+                nextBtn.removeAttribute('aria-disabled');
+            }
+        }
+
+        // La inițializare
+        updateButtons();
+
+        // Ascultă evenimentul când slide-ul s-a schimbat
+        carouselElement.addEventListener('slid.bs.carousel', updateButtons);
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

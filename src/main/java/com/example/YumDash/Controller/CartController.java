@@ -68,7 +68,6 @@ public class CartController {
     }
 
 
-
     @GetMapping("/view")
     public String viewCart(HttpSession session, Model model, Principal principal) {
         UserOrder draftOrder = (UserOrder) session.getAttribute("draftOrder");
@@ -96,6 +95,11 @@ public class CartController {
                     phone = phone.substring(2);
                 }
             }
+            if (user != null) {
+                boolean eligibleForDiscount = user.isPhoneVerified() && !user.isDiscountUsed();
+                model.addAttribute("eligibleForDiscount", eligibleForDiscount);
+            }
+
         }
         return "cartView";
     }

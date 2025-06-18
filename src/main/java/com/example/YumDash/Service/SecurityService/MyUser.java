@@ -1,6 +1,7 @@
 package com.example.YumDash.Service.SecurityService;
 
 import com.example.YumDash.Model.User.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,9 +13,11 @@ import java.util.List;
 
 
 @RequiredArgsConstructor
+@Getter
 public class MyUser implements UserDetails {
 
     private final User user;
+    private int id;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

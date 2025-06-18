@@ -29,4 +29,5 @@ public interface OrderRepo extends JpaRepository<UserOrder, Integer> {
                                   @Param("endDate") Timestamp endDate);
 
 
+    List<UserOrder> findByFoodProviderAndStatus(FoodProvider foodProvider, String livrata);
 }

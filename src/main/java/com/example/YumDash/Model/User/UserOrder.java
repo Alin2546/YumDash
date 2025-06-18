@@ -33,6 +33,7 @@ public class UserOrder {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    private boolean reviewed = false;
     private LocalDateTime orderDate;
     private double amount;
     private String status;

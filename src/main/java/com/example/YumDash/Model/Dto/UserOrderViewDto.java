@@ -14,7 +14,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class UserOrderViewDto {
+    private boolean reviewed;
     private int id;
+    private int providerId;
     private String restaurantName;
     private String restaurantImageUrl;
     private LocalDateTime orderDate;

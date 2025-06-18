@@ -1,56 +1,62 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="ro" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8">
-  <title>Plată Reușită</title>
-  <link rel="icon" type="image/jpg" href="https://i.ibb.co/nq3qvVch/Yum-Dash-Logo.jpg">
-  <style>
-    body {
-        font-family: 'Segoe UI', sans-serif;
-        background-color: #f0fff4;
-        text-align: center;
-        padding: 60px;
-    }
+    <meta charset="UTF-8">
+    <title>Plată Reușită</title>
+    <link rel="icon" type="image/jpg" href="/FoodImages/YumDashLogo.jpg">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0fff4;
+            text-align: center;
+            padding: 60px;
+        }
 
-    .success-container {
-        background-color: #ffffff;
-        border: 2px solid #38a169;
-        padding: 40px;
-        border-radius: 12px;
-        display: inline-block;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    }
+        .success-container {
+            background-color: #ffffff;
+            border: 2px solid #38a169;
+            padding: 40px;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
 
-    h1 {
-        color: #2f855a;
-    }
+        h1 {
+            color: #2f855a;
+        }
 
-    p {
-        color: #4a5568;
-        font-size: 18px;
-    }
+        p {
+            color: #4a5568;
+            font-size: 18px;
+        }
 
-    a {
-        display: inline-block;
-        margin-top: 20px;
-        text-decoration: none;
-        background-color: #38a169;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        transition: background-color 0.3s ease;
-    }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            background-color: #38a169;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
 
-    a:hover {
-        background-color: #2f855a;
-    }
-  </style>
+        a:hover {
+            background-color: #2f855a;
+        }
+    </style>
 </head>
 <body>
 <div class="success-container">
-  <h1>✅ Comandă Trimisa!</h1>
-  <p>Îți mulțumim pentru comandă. Comanda dumneavoastra se va livra in cel mai scurt timp posibil.</p>
-  <a href="/getFoodPage">Înapoi la meniul principal</a>
+    <h1>✅ Comandă Trimisa!</h1>
+    <p>Îți mulțumim pentru comandă. Comanda dumneavoastra se va livra in cel mai scurt timp posibil.</p>
+
+    <a th:href="@{/order/track/{id}(id=${order.id})}">
+
+        Urmăriți comanda
+
+    </a>
+
 </div>
 </body>
 </html>

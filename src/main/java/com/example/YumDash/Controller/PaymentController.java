@@ -23,11 +23,8 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -88,6 +85,17 @@ public class PaymentController {
         Map<Integer, FoodProduct> foodProductMap = foodProductService.getAllFoodProducts();
         double subtotal = cartService.calculateTotal(session, foodProductMap);
 
+        boolean eligibleForDiscount = user.isPhoneVerified() && !user.isDiscountUsed();
+        double discount = 0.0;
+
+        if (eligibleForDiscount) {
+            discount = subtotal * 0.5;
+            subtotal -= discount;
+
+            user.setDiscountUsed(true);
+            userService.updateUser(user);
+        }
+
         double deliveryFee = subtotal >= 100.0 ? 0.0 : 9.99;
         double packagingFee = 2.50;
         double serviceFee = 1.20;
@@ -144,6 +152,19 @@ public class PaymentController {
         session.removeAttribute("cart");
         return "paymentSuccess";
     }
+
+    @GetMapping("/order/track/{id}")
+    public String trackOrder(@PathVariable int id, Model model) {
+        UserOrder order = orderService.findById(id).orElseThrow(() -> new RuntimeException("Comanda nu a fost gasita"));
+        if (order == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("order", order);
+        return "trackOrder";
+    }
+
+
 
     @GetMapping("/online")
     public String showOnlinePaymentPage(HttpSession session, Model model) {

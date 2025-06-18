@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Recenzii pentru [[${provider.name}]]</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 30px auto;
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    h1 {
+      color: #ff9900;
+      margin-bottom: 10px;
+    }
+    .average-rating {
+      font-weight: bold;
+      margin-bottom: 20px;
+      font-size: 1.2em;
+      color: #444;
+    }
+    ul.reviews-list {
+      list-style: none;
+      padding: 0;
+    }
+    ul.reviews-list li {
+      background-color: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .review-header {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .review-date {
+      font-size: 0.85em;
+      color: #666;
+    }
+    .review-rating {
+      color: #ffcc00;
+      font-size: 1.1em;
+      margin-bottom: 8px;
+    }
+    .review-comment {
+      font-size: 1em;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+<h1 th:text="'Recenzii pentru ' + ${provider.name}"></h1>
+
+<p class="average-rating"
+   th:text="${averageRating != null ? 'Rating mediu: ' + #numbers.formatDecimal(averageRating, 1, 1) + ' / 5' : 'Rating mediu: N/A'}"></p>
+
+
+
+
+<ul class="reviews-list">
+  <li th:each="review : ${reviews}">
+    <div class="review-header" th:text="${review.user != null ? review.user.name : 'Anonim'}"></div>
+    <div class="review-date" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy HH:mm')}"></div>
+    <div class="review-rating">
+      <span th:each="star : ${#numbers.sequence(1, review.rating)}">&#9733;</span>
+      <span th:each="star : ${#numbers.sequence(review.rating + 1, 5)}">&#9734;</span>
+      <span> (<span th:text="${review.rating}"></span>/5)</span>
+    </div>
+    <div class="review-comment" th:text="${review.comment}"></div>
+  </li>
+</ul>
+
+
+</body>
+</html>

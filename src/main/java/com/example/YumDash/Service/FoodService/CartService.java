@@ -64,6 +64,27 @@ public class CartService {
         Map<Integer, FoodProduct> foodProductMap = foodProductService.getAllFoodProducts();
 
         double subtotal = calculateTotal(session, foodProductMap);
+
+        double discount = 0.0;
+        boolean eligibleForDiscount = false;
+
+
+        if (principal != null) {
+            User user;
+            if (principal instanceof OAuth2AuthenticationToken oauthToken) {
+                String email = oauthToken.getPrincipal().getAttribute("email");
+                user = userService.findByEmail(email).orElse(null);
+            } else {
+                String email = principal.getName();
+                user = userService.findByEmail(email).orElse(null);
+            }
+            if (user != null && user.isPhoneVerified() && !user.isDiscountUsed()) {
+                eligibleForDiscount = true;
+                discount = subtotal * 0.5;
+                subtotal -= discount;
+            }
+        }
+
         double deliveryFee = subtotal >= 100.0 ? 0.0 : 9.99;
         double packagingFee = 2.50;
         double serviceFee = 1.20;
@@ -88,6 +109,8 @@ public class CartService {
         model.addAttribute("deliveryFee", deliveryFee);
         model.addAttribute("packagingFee", packagingFee);
         model.addAttribute("serviceFee", serviceFee);
+        model.addAttribute("discount", discount);
+        model.addAttribute("eligibleForDiscount", eligibleForDiscount);
         model.addAttribute("total", total);
         model.addAttribute("selectedRestaurantId", selectedRestaurantId);
 
@@ -122,6 +145,7 @@ public class CartService {
         }
         model.addAttribute("checkoutDto", checkoutDto);
     }
+
 
     public CheckoutDto convertOrderToCheckoutDto(UserOrder order) {
         CheckoutDto dto = new CheckoutDto();

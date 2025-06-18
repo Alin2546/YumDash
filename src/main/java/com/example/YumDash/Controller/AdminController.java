@@ -2,8 +2,6 @@ package com.example.YumDash.Controller;
 
 import com.example.YumDash.Model.Food.FoodProvider;
 import com.example.YumDash.Model.User.User;
-import com.example.YumDash.Model.User.UserOrder;
-import com.example.YumDash.Repository.UserRepo;
 import com.example.YumDash.Service.FoodService.FoodProviderService;
 import com.example.YumDash.Service.OrderService;
 import com.example.YumDash.Service.UserService;

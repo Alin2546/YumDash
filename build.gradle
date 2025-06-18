@@ -40,6 +40,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.4")
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version:'2.8.5'
 	implementation("com.twilio.sdk:twilio:10.7.2")
+	implementation("org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE")
 }
 
 tasks.named('test') {

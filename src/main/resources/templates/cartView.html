@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Coșul Meu - YumDash</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="icon" type="image/jpg" href="https://i.ibb.co/nq3qvVch/Yum-Dash-Logo.jpg">
+    <link rel="icon" type="image/jpg" href="/FoodImages/YumDashLogo.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script th:inline="javascript">
         const savedLat = /*[[${latitude}]]*/ 47.1585;
@@ -255,6 +255,9 @@
 
                     <div class="cart-summary">
                         <p>Subtotal: <span th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">0.00</span> RON</p>
+                        <p th:if="${discount > 0}">
+                            Reducere 50%: <span th:text="'-' + ${#numbers.formatDecimal(discount, 1, 2)}">0.00</span> RON
+                        </p>
                         <p>Taxă livrare: <span th:text="${#numbers.formatDecimal(deliveryFee, 1, 2)}">0.00</span> RON</p>
                         <p>Taxă ambalare: <span th:text="${#numbers.formatDecimal(packagingFee, 1, 2)}">0.00</span> RON</p>
                         <p>Taxă serviciu: <span th:text="${#numbers.formatDecimal(serviceFee, 1, 2)}">0.00</span> RON</p>
@@ -272,7 +275,9 @@
                 </div>
             </form>
 
-
+            <div th:if="${eligibleForDiscount}" class="alert alert-success text-center fw-bold">
+                🎉 Felicitări! Ai 50% reducere la prima comandă pentru că ți-ai verificat numărul de telefon!
+            </div>
         </div>
     </div>
 

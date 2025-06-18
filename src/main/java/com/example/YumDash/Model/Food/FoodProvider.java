@@ -26,6 +26,7 @@ public class FoodProvider {
     private double latitude;
     private double longitude;
     private String phoneNumber;
+    private Double rating;
 
 
     @OneToMany(mappedBy = "foodProvider", cascade = CascadeType.ALL, orphanRemoval = true)

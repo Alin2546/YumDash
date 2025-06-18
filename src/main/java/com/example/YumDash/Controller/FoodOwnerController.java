@@ -11,6 +11,7 @@ import com.example.YumDash.Repository.*;
 import com.example.YumDash.Service.FoodService.EmailAlreadyUsedException;
 import com.example.YumDash.Service.FoodService.FoodProductService;
 import com.example.YumDash.Service.FoodService.FoodProviderService;
+import com.example.YumDash.Service.FoodService.ReviewService;
 import com.example.YumDash.Service.GoogleMapsService;
 import com.example.YumDash.Service.OrderService;
 import jakarta.validation.Valid;
@@ -21,9 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Controller
@@ -35,6 +34,7 @@ public class FoodOwnerController {
     private final OrderRepo orderRepo;
     private final OrderService orderService;
     private final FoodProductService foodProductService;
+    private final ReviewService reviewService;
 
 
     @GetMapping("/addProvider")
@@ -86,11 +86,64 @@ public class FoodOwnerController {
             model.addAttribute("categories", Category.values());
             model.addAttribute("productCreateDto", new ProductCreateDto());
             List<UserOrder> orders = orderRepo.findByFoodProvider(foodProvider);
+            orders.sort(Comparator
+                    .comparing(UserOrder::getStatus)
+                    .thenComparing(UserOrder::getOrderDate, Comparator.reverseOrder()));
             model.addAttribute("orders", orders);
+
+            Double averageRating = reviewService.getAverageRating(foodProvider.getId());
+            model.addAttribute("averageRating", averageRating);
         } else {
             model.addAttribute("error", "Food provider not found.");
         }
         return "providerView";
+    }
+
+    @GetMapping("/provider/orders")
+    public String showProviderOrders(Model model, Principal principal) {
+        String email = principal.getName();
+        FoodProvider foodProvider = foodProviderService.getFoodProviderByEmail(email);
+        List<UserOrder> orders = orderRepo.findByFoodProvider(foodProvider);
+
+
+        List<UserOrder> ordersReceived = orders.stream()
+                .filter(o -> o.getStatus().equals("TRIMISA"))
+                .sorted(Comparator.comparing(UserOrder::getOrderDate).reversed())
+                .toList();
+
+        List<UserOrder> ordersAccepted = orders.stream()
+                .filter(o -> o.getStatus().equals("CONFIRMATA"))
+                .sorted(Comparator.comparing(UserOrder::getOrderDate).reversed())
+                .toList();
+
+        model.addAttribute("ordersReceived", ordersReceived);
+        model.addAttribute("ordersAccepted", ordersAccepted);
+        return "providerOrders";
+    }
+
+    @GetMapping("/provider/orders/newCount")
+    @ResponseBody
+    public Map<String, Integer> getNewOrdersCount(Principal principal) {
+        String email = principal.getName();
+        FoodProvider foodProvider = foodProviderService.getFoodProviderByEmail(email);
+        List<UserOrder> orders = orderRepo.findByFoodProvider(foodProvider);
+
+        int newOrdersCount = (int) orders.stream()
+                .filter(o -> o.getStatus().equals("TRIMISA"))
+                .count();
+
+        return Collections.singletonMap("newOrdersCount", newOrdersCount);
+    }
+
+
+    @GetMapping("/provider/orders/delivered")
+    public String showDeliveredOrders(Model model, Principal principal) {
+        String email = principal.getName();
+        FoodProvider foodProvider = foodProviderService.getFoodProviderByEmail(email);
+        List<UserOrder> deliveredOrders = orderRepo.findByFoodProviderAndStatus(foodProvider, "LIVRATA");
+        deliveredOrders.sort(Comparator.comparing(UserOrder::getOrderDate));
+        model.addAttribute("orders", deliveredOrders);
+        return "providerDeliveredOrders";
     }
 
     @PostMapping("/product/{id}/toggleAvailability")
@@ -194,13 +247,13 @@ public class FoodOwnerController {
     @PostMapping("/provider/orders/{id}/accept")
     public String acceptOrder(@PathVariable int id) {
         orderService.acceptOrder(id);
-        return "redirect:/provider/products";
+        return "redirect:/provider/orders";
     }
 
     @PostMapping("/provider/orders/{id}/cancel")
     public String cancelOrder(@PathVariable int id) {
         orderService.cancelOrder(id);
-        return "redirect:/provider/products";
+        return "redirect:/provider/orders";
     }
 
     @PostMapping("/provider/orders/{id}/markDelivered")
@@ -213,7 +266,7 @@ public class FoodOwnerController {
                 orderRepo.save(order);
             }
         }
-        return "redirect:/provider/products";
+        return "redirect:/provider/orders";
     }
 
 }

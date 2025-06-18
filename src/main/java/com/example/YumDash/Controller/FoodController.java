@@ -65,11 +65,14 @@ public class FoodController {
         model.addAttribute("address", address);
         model.addAttribute("keyword", keyword);
 
-        List<FoodProvider> allMatchingProviders = foodProviderService.searchFoodProviders(keyword);
+
+        List<FoodProvider> allMatchingProviders = foodProviderService.searchFoodProviders(keyword)
+                .stream()
+                .filter(provider -> provider.getUser().isActive())
+                .collect(Collectors.toList());
 
         List<FoodProvider> availableProviders = new ArrayList<>();
         List<FoodProvider> unavailableProviders = new ArrayList<>();
-
 
         if (address != null && !address.isEmpty()) {
             for (FoodProvider provider : allMatchingProviders) {
@@ -82,6 +85,7 @@ public class FoodController {
         } else {
             availableProviders = allMatchingProviders;
         }
+
         model.addAttribute("availableProviders", availableProviders);
         model.addAttribute("unavailableProviders", unavailableProviders);
         return "searchResults";

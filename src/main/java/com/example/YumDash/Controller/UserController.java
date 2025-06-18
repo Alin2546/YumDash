@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
-import java.security.Principal;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -147,7 +147,7 @@ public class UserController {
     @GetMapping("/orders")
     public String getUserOrders(Model model, Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        String email = null;
+        String email;
 
         if (principal instanceof OAuth2User) {
             email = (String) ((OAuth2User) principal).getAttributes().get("email");
@@ -155,11 +155,25 @@ public class UserController {
             email = authentication.getName();
         }
 
-        User user = userService.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         List<UserOrder> userOrders = orderService.findOrdersByUser(user);
+
+        Map<String, Integer> statusPriority = Map.of(
+                "CONFIRMATA", 1,
+                "TRIMISA", 2,
+                "ANULATA", 3,
+                "LIVRATA", 4
+        );
 
         List<UserOrderViewDto> orderDtos = userOrders.stream()
                 .filter(order -> order.getFoodProvider() != null)
+                .sorted(
+                        Comparator
+                                .comparingInt((UserOrder o) -> statusPriority.getOrDefault(o.getStatus(), 99))
+                                .thenComparing(UserOrder::getOrderDate, Comparator.reverseOrder())
+                )
                 .map(order -> {
                     FoodProvider provider = order.getFoodProvider();
                     List<OrderItemDto> items = order.getOrderItems().stream()
@@ -167,7 +181,9 @@ public class UserController {
                             .collect(Collectors.toList());
 
                     return new UserOrderViewDto(
+                            order.isReviewed(),
                             order.getId(),
+                            provider.getId(),
                             provider.getName(),
                             provider.getImageurl(),
                             order.getOrderDate(),
@@ -184,9 +200,11 @@ public class UserController {
                     );
                 })
                 .collect(Collectors.toList());
+
         model.addAttribute("userOrders", orderDtos);
         return "userOrders";
     }
+
 
     @GetMapping("/resetPasswordForm")
     public String resetPasswordForm(@RequestParam("email") String email, Model model) {
