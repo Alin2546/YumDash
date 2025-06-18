@@ -51,8 +51,7 @@ public class ReviewController {
                             @RequestParam Integer rating,
                             @RequestParam String comment,
                             @RequestParam int orderId,
-                            Authentication authentication,
-                            RedirectAttributes redirectAttributes) {
+                            Authentication authentication) {
         String email = null;
         if (authentication.getPrincipal() instanceof DefaultOidcUser) {
             DefaultOidcUser oidcUser = (DefaultOidcUser) authentication.getPrincipal();
