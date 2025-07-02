@@ -1,14 +1,12 @@
 # YumDash 🍽️
 
-🌐 [Live app here](https://yumdash.onrender.com)
-
 🌐 [Youtube presentation for YumDash](https://youtu.be/LDUhtDXhFZ8)
 
 **YumDash** is a web-based food delivery platform built using Spring Boot, Spring Security, and Thymeleaf. It allows users to browse restaurants, view menus, place orders, and manage their profiles.
 
 ---
 
-## 🚀 Features
+## Features
 
 - **User Authentication**: Log in or register to access personal profiles and order history.
 - **Browse Restaurants**: Explore various food providers and their offers.
@@ -18,7 +16,7 @@
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Backend**: Spring Boot
 - **Authentication**: Spring Security
@@ -31,7 +29,7 @@
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 ### Landing page
 ![Landing page - variantă 1](screenshots/homepage.png)  
